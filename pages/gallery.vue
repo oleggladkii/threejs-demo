@@ -1,6 +1,16 @@
 <template lang="pug">
 .page
   canvas(id="mountId" width="700" height="500" class="canvas")
+  q-card.info-card(ref="infoCardRef", :class="{'fadeIn': isDisplayImageInfo, 'fadeOut': !isDisplayImageInfo}")
+    template(v-if="selectedPainting?.info.price")
+      img(:src='selectedPainting?.path')
+      q-card-section
+        .text-h6 {{ selectedPainting?.info.name }}
+        .text-subtitle2 by {{ selectedPainting?.info.author }}
+      q-card-section.q-pt-none
+        .text-subtitle2 Current BID {{ selectedPainting?.info.price }}
+        .text-subtitle2 Click to buy
+
   .overlay(v-if="!controlsLocked")
     h3.title(@click="hideControls") Click to start
     q-btn.q-ma-sm(color="primary" to="/") Back
@@ -17,17 +27,14 @@ import {
   MeshPhysicalMaterial,
   DoubleSide, TextureLoader, Group, MirroredRepeatWrapping, Box3, Vector3, SphereGeometry, Clock,
 } from 'three'
-import sphereTexture from 'assets/images/sphere-texture.jpg'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
 import floorTexture from '@/assets/images/textures/gray-parquet.jpg'
 import ceilingTexture from '@/assets/images/textures/office-ceiling.jpg'
 import wallTexture from '@/assets/images/textures/bricks-white.jpg'
 import { useThree } from '@/composables/useThree'
-import image1 from '@/assets/images/image1.jpg'
-import image2 from '@/assets/images/image2.jpg'
-import image3 from '@/assets/images/image3.jpg'
-import image4 from '@/assets/images/image4.jpg'
-import image5 from '@/assets/images/image5.jpg'
+import type {Painting} from "~/interfaces/entities/Painting";
+import {paintingsData} from "~/utils/data/paintingsData";
+import {config} from "~/utils/data/config";
 
 definePageMeta({
   layout: 'empty',
@@ -41,11 +48,7 @@ let _renderLoopId: number
 let _box: Mesh
 const { initThree, cleanUpThree } = useThree()
 const canvas = computed(() => document.getElementById('mountId') as HTMLCanvasElement)
-const config = {
-  movingSpeed: 7,
-  floorWidth: 40,
-  floorHeight: 40,
-}
+
 
 const animateObject = () => {
   _box.rotation.x += 0.003
@@ -100,10 +103,10 @@ const renderWalls = () => {
   const material = new MeshBasicMaterial({ map: textureWall })
 
   const frontWall = new Mesh(new BoxGeometry(config.floorWidth + 2.1, 24, -2), material)
-  frontWall.position.set(0, 7, -(config.floorWidth / 2))
+  frontWall.position.set(0, 7, -(config.floorHeight / 2))
 
   const backWall = new Mesh(new BoxGeometry(config.floorWidth + 2.1, 24, -2), material)
-  backWall.position.set(0, 7, (config.floorWidth / 2))
+  backWall.position.set(0, 7, (config.floorHeight / 2))
 
   const leftWall = new Mesh(new BoxGeometry(config.floorWidth + 2.1, 24, -2), material)
   leftWall.position.set(-(config.floorWidth / 2), 7, 0)
@@ -121,27 +124,33 @@ const renderWalls = () => {
   })
 }
 
-const renderImage = (url: string, width: number, height: number, position: { x: number, y: number, z: number }) => {
+
+const renderImage = (url: string, width: number, height: number, position: { x: number, y: number, z: number }, rotateY: number) => {
   const texture = new TextureLoader().load(url)
   const material = new MeshBasicMaterial({ map: texture })
   const geometry = new PlaneGeometry(width, height, 1, 1)
   const image = new Mesh(geometry, material)
   image.position.set(position.x, position.y, position.z)
+  if (rotateY) {
+    image.rotateY(rotateY)
+  }
   return image
 }
 const renderImages = () => {
-  _scene.add(renderImage(image2, 8, 4, new Vector3(-6, 3, -(config.floorWidth / 2) - 0.9)))
-  _scene.add(renderImage(image3, 8, 4, new Vector3(6, 3, -(config.floorWidth / 2) - 0.9)))
-  const imageFour = renderImage(image4, 8, 4, new Vector3((config.floorWidth / 2) + 0.9, 3, 0))
-  imageFour.rotateY(-Math.PI / 2)
-  _scene.add(imageFour)
+  // _scene.add(renderImage(image2, 8, 4, new Vector3(-6, 2, -(config.floorWidth / 2) - 0.9)))
+  // _scene.add(renderImage(image3, 8, 4, new Vector3(6, 2, -(config.floorWidth / 2) - 0.9)))
+  // const imageFour = renderImage(image4, 8, 4, new Vector3((config.floorWidth / 2) + 0.9, 2, 0))
+  // imageFour.rotateY(-Math.PI / 2)
+  // _scene.add(imageFour)
+  paintingsData.forEach(painting => {
+    _scene.add(renderImage(painting.path, painting.width, painting.height, new Vector3(painting.position.x, painting.position.y, painting.position.z), painting.rotateY))
+  })
 }
 
 const startControls = () => {
   _controls.lock()
 }
 const hideControls = () => {
-  console.log('hideControls')
   document.addEventListener('click', startControls)
 }
 const showControls = () => {
@@ -154,11 +163,9 @@ const setControls = () => {
 }
 const controlsLocked = ref(false)
 const onControlsLock = () => {
-  console.log('onControlsLock')
   controlsLocked.value = true
 }
 const onControlsUnlock = () => {
-  console.log('onControlsUnlock')
   controlsLocked.value = false
   showControls()
 }
@@ -170,7 +177,7 @@ const setupScene = () => {
   _renderer = renderer
   _controls = new PointerLockControls(_camera, document.body)
 
-  renderCube()
+  // renderCube()
   renderWalls()
   renderFloor()
   renderCeiling()
@@ -237,8 +244,36 @@ const updateMovement = (delta: number) => {
     _camera.position.copy(prevPosition)
   }
 }
+
+const onBuyPainting = () => {
+  console.log('clicked', selectedPainting.value)
+  infoCardRef.value?.$el.classList.add('expanded')
+}
+
+const infoCardRef = ref<HTMLDivElement | null>(null)
+const isDisplayImageInfo = ref(false)
+const displayImageInfo = () => {
+  document.addEventListener('click', onBuyPainting)
+  isDisplayImageInfo.value = true;
+}
+const hideImageInfo = () => {
+  document.removeEventListener('click', onBuyPainting)
+  isDisplayImageInfo.value = false;
+}
+
+const selectedPainting = ref<Painting | null>(null)
 const renderLoop = () => {
-  animateObject()
+  // animateObject()
+  let isSelectedPainting = false;
+  paintingsData.forEach(painting => {
+    const distanceAllowed = 7;
+    const distanceToPainting = _camera.position.distanceTo(painting.position)
+    if (distanceToPainting < distanceAllowed) {
+      selectedPainting.value = painting;
+      isSelectedPainting = true;
+    }
+  })
+  isSelectedPainting ? displayImageInfo() : hideImageInfo();
   updateMovement(clock.getDelta())
   _renderer.render(_scene, _camera)
   _renderLoopId = requestAnimationFrame(renderLoop)
@@ -290,5 +325,41 @@ onBeforeUnmount(() => {
     right: 0;
     top: 40%;
     cursor: pointer;
+  }
+  .info-card {
+    position: fixed;
+    right: 10px;
+    width: 350px;
+    transition: .3s ease-in;
+    &.fadeIn {
+      top: 10px;
+      opacity: 0.8;
+      animation: cardFadeIn 0.3s ease-in;
+    }
+    &.fadeOut {
+      top: 0;
+      opacity: 0;
+      animation: cardFadeOut 0.3s ease-out;
+    }
+  }
+  @keyframes cardFadeIn {
+    0% {
+      top:0;
+      opacity: 0;
+    }
+    100% {
+      top: 10px;
+      opacity: 0.8;
+    }
+  }
+  @keyframes cardFadeOut {
+    0% {
+      top: 10px;
+      opacity: 0.8;
+    }
+    100% {
+      top: 0;
+      opacity: 0;
+    }
   }
 </style>
