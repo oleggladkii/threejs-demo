@@ -17,19 +17,30 @@
 </template>
 
 <script setup lang="ts">
-import {
-  MeshBasicMaterial,
-  type PerspectiveCamera, PlaneGeometry,
-  type Scene,
-  type WebGLRenderer,
-  BoxGeometry,
-  Mesh,
-  MeshPhysicalMaterial,
-  DoubleSide, TextureLoader, Group, MirroredRepeatWrapping, Box3, Vector3, SphereGeometry, Clock,
-} from 'three'
+  import {
+    type PerspectiveCamera,
+    PlaneGeometry,
+    type Scene,
+    type WebGLRenderer,
+    BoxGeometry,
+    Mesh,
+    MeshPhysicalMaterial,
+    DoubleSide,
+    TextureLoader,
+    Group,
+    MirroredRepeatWrapping,
+    Box3,
+    Vector3,
+    SphereGeometry,
+    Clock,
+    SpotLight,
+    SpotLightHelper,
+    MeshStandardMaterial,
+    MathUtils,
+  } from 'three'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
-import floorTexture from '@/assets/images/textures/gray-parquet.jpg'
-import ceilingTexture from '@/assets/images/textures/office-ceiling.jpg'
+import floorTexture from '@/assets/images/textures/woodfloor1k.jpg'
+import ceilingTexture from '@/assets/images/textures/rubber.jpg'
 import wallTexture from '@/assets/images/textures/bricks-white.jpg'
 import { useThree } from '@/composables/useThree'
 import type {Painting} from "~/interfaces/entities/Painting";
@@ -55,7 +66,7 @@ const animateObject = () => {
   _box.rotation.y += 0.005
 }
 const renderCube = () => {
-  const textureSphere = new TextureLoader().load(sphereTexture)
+  const textureSphere = new TextureLoader().load(wallTexture)
   const geometry = new SphereGeometry(2, 100, 100)
   const material = new MeshPhysicalMaterial({
     map: textureSphere,
@@ -63,18 +74,45 @@ const renderCube = () => {
     reflectivity: 1,
   })
   _box = new Mesh(geometry, material)
-  _box.position.set(-4, 1, 0)
+  _box.castShadow = true;
+  _box.position.set(18, 2.5, 10)
   _scene.add(_box)
 }
+
+const createSpotlight = (lightPosition: { x: number, y: number, z: number }, intensity:number, targetPosition: { x: number, y: number, z: number }) => {
+  const spotlight = new SpotLight(0xffffff, intensity);
+  spotlight.position.set(lightPosition.x, lightPosition.y, lightPosition.z);
+  spotlight.castShadow = true;
+  spotlight.target.position.copy(new Vector3(targetPosition.x, targetPosition.y, targetPosition.z));
+  spotlight.angle = MathUtils.degToRad(35);
+  spotlight.penumbra = 1;
+  spotlight.distance = 20;
+
+  spotlight.shadow.mapSize.width = 1024;
+  spotlight.shadow.mapSize.height = 1024;
+  spotlight.shadow.camera.near = 0.5;
+  spotlight.shadow.camera.far = 50;
+
+  _scene.add(spotlight);
+  _scene.add(spotlight.target);
+
+  // helper for the spotlight
+  // const spotlightHelper = new SpotLightHelper(spotlight);
+  // _scene.add(spotlightHelper);
+
+  return spotlight;
+}
+
 const renderFloor = () => {
   const textureFloor = new TextureLoader().load(floorTexture)
   textureFloor.wrapS = MirroredRepeatWrapping
   textureFloor.wrapT = MirroredRepeatWrapping
-  textureFloor.repeat.set(10, 10)
+  textureFloor.repeat.set(16, 4)
 
-  const floorPlane = new Mesh(new PlaneGeometry(config.floorWidth + 1, config.floorHeight + 1), new MeshBasicMaterial({ map: textureFloor, side: DoubleSide }))
+  const floorPlane = new Mesh(new PlaneGeometry(config.floorWidth + 1, config.floorHeight + 1), new MeshStandardMaterial({ map: textureFloor, side: DoubleSide }))
   floorPlane.rotateX(Math.PI / 2)
-  floorPlane.position.set(0, -2, 0)
+  floorPlane.position.set(0, -1, 0)
+  floorPlane.receiveShadow = true;
 
   _scene.add(floorPlane)
 }
@@ -83,11 +121,11 @@ const renderCeiling = () => {
   const textureCeiling = new TextureLoader().load(ceilingTexture)
   textureCeiling.wrapS = MirroredRepeatWrapping
   textureCeiling.wrapT = MirroredRepeatWrapping
-  textureCeiling.repeat.set(5, 5)
+  textureCeiling.repeat.set(10, 2)
 
-  const ceilingPlane = new Mesh(new PlaneGeometry(config.floorWidth, config.floorHeight), new MeshBasicMaterial({ map: textureCeiling }))
+  const ceilingPlane = new Mesh(new PlaneGeometry(config.floorWidth, config.floorHeight), new MeshStandardMaterial({ map: textureCeiling }))
   ceilingPlane.rotateX(Math.PI / 2)
-  ceilingPlane.position.set(0, 18, 0)
+  ceilingPlane.position.set(0, 20, 0)
 
   _scene.add(ceilingPlane)
 }
@@ -100,21 +138,29 @@ const renderWalls = () => {
   textureWall.wrapS = MirroredRepeatWrapping
   textureWall.wrapT = MirroredRepeatWrapping
   textureWall.repeat.set(4, 3)
-  const material = new MeshBasicMaterial({ map: textureWall })
+  const material = new MeshStandardMaterial({ map: textureWall })
 
   const frontWall = new Mesh(new BoxGeometry(config.floorWidth + 2.1, 24, -2), material)
-  frontWall.position.set(0, 7, -(config.floorHeight / 2))
+  frontWall.position.set(0, 10, -(config.floorHeight / 2))
+  frontWall.castShadow = true;
+  frontWall.receiveShadow = true;
 
   const backWall = new Mesh(new BoxGeometry(config.floorWidth + 2.1, 24, -2), material)
-  backWall.position.set(0, 7, (config.floorHeight / 2))
+  backWall.position.set(0, 10, (config.floorHeight / 2))
+  backWall.castShadow = true;
+  backWall.receiveShadow = true;
 
   const leftWall = new Mesh(new BoxGeometry(config.floorWidth + 2.1, 24, -2), material)
-  leftWall.position.set(-(config.floorWidth / 2), 7, 0)
+  leftWall.position.set(-(config.floorWidth / 2), 10, 0)
   leftWall.rotateY(Math.PI / 2)
+  leftWall.castShadow = true;
+  leftWall.receiveShadow = true;
 
   const rightWall = new Mesh(new BoxGeometry(config.floorWidth + 2.1, 24, -2), material)
-  rightWall.position.set((config.floorWidth / 2), 7, 0)
+  rightWall.position.set((config.floorWidth / 2), 10, 0)
   rightWall.rotateY(Math.PI / 2)
+  rightWall.castShadow = true;
+  rightWall.receiveShadow = true;
 
   wallsGroup.add(frontWall, backWall, leftWall, rightWall)
 
@@ -125,26 +171,23 @@ const renderWalls = () => {
 }
 
 
-const renderImage = (url: string, width: number, height: number, position: { x: number, y: number, z: number }, rotateY: number) => {
-  const texture = new TextureLoader().load(url)
-  const material = new MeshBasicMaterial({ map: texture })
-  const geometry = new PlaneGeometry(width, height, 1, 1)
+const renderImage = (painting: Painting) => {
+  const texture = new TextureLoader().load(painting.path)
+  const material = new MeshStandardMaterial({ map: texture })
+  const geometry = new PlaneGeometry(painting.width, painting.height)
   const image = new Mesh(geometry, material)
-  image.position.set(position.x, position.y, position.z)
-  if (rotateY) {
-    image.rotateY(rotateY)
+  image.position.set(painting.position.x, painting.position.y, painting.position.z)
+  if (painting.rotateY) {
+    image.rotateY(painting.rotateY)
   }
+  image.castShadow = true;
+  image.receiveShadow = true;
+
   return image
 }
 const renderImages = () => {
-  // _scene.add(renderImage(image2, 8, 4, new Vector3(-6, 2, -(config.floorWidth / 2) - 0.9)))
-  // _scene.add(renderImage(image3, 8, 4, new Vector3(6, 2, -(config.floorWidth / 2) - 0.9)))
-  // const imageFour = renderImage(image4, 8, 4, new Vector3((config.floorWidth / 2) + 0.9, 2, 0))
-  // imageFour.rotateY(-Math.PI / 2)
-  // _scene.add(imageFour)
-  paintingsData.forEach(painting => {
-    _scene.add(renderImage(painting.path, painting.width, painting.height, new Vector3(painting.position.x, painting.position.y, painting.position.z), painting.rotateY))
-  })
+  paintingsData.forEach(painting => _scene.add(renderImage(painting)));
+  paintingsData.forEach(painting => createSpotlight(painting.lightConfig.position, 450, painting.lightConfig.targetPosition));
 }
 
 const startControls = () => {
@@ -246,7 +289,6 @@ const updateMovement = (delta: number) => {
 }
 
 const onBuyPainting = () => {
-  console.log('clicked', selectedPainting.value)
   infoCardRef.value?.$el.classList.add('expanded')
 }
 

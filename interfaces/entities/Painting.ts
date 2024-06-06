@@ -6,6 +6,7 @@ export interface Painting {
   position: Position;
   rotateY: number;
   info: Info;
+  lightConfig: LightConfig;
 }
 interface Position {
   x: number;
@@ -17,5 +18,10 @@ interface Info {
   name: string;
   author: string;
   price: string;
+}
+
+interface LightConfig {
+  position: Position;
+  targetPosition: Position;
 }
 
