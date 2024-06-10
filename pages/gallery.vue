@@ -43,9 +43,12 @@ import floorTexture from '@/assets/images/textures/woodfloor1k.jpg'
 import ceilingTexture from '@/assets/images/textures/rubber.jpg'
 import wallTexture from '@/assets/images/textures/bricks-white.jpg'
 import { useThree } from '@/composables/useThree'
-import type {Painting} from "~/interfaces/entities/Painting";
-import {paintingsData} from "~/utils/data/paintingsData";
-import {config} from "~/utils/data/config";
+import type {Painting} from "@/interfaces/entities/Painting";
+import {paintingsData} from "@/utils/data/paintingsData";
+import {config} from "@/utils/data/config";
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+  import type {Model} from "~/interfaces/entities/Model";
+  import {modelsData} from "~/utils/data/modelsData";
 
 definePageMeta({
   layout: 'empty',
@@ -84,7 +87,7 @@ const createSpotlight = (lightPosition: { x: number, y: number, z: number }, int
   spotlight.position.set(lightPosition.x, lightPosition.y, lightPosition.z);
   spotlight.castShadow = true;
   spotlight.target.position.copy(new Vector3(targetPosition.x, targetPosition.y, targetPosition.z));
-  spotlight.angle = MathUtils.degToRad(35);
+  spotlight.angle = MathUtils.degToRad(50);
   spotlight.penumbra = 1;
   spotlight.distance = 20;
 
@@ -140,23 +143,23 @@ const renderWalls = () => {
   textureWall.repeat.set(4, 3)
   const material = new MeshStandardMaterial({ map: textureWall })
 
-  const frontWall = new Mesh(new BoxGeometry(config.floorWidth + 2.1, 24, -2), material)
+  const frontWall = new Mesh(new BoxGeometry(config.floorWidth, 24, 0.1), material)
   frontWall.position.set(0, 10, -(config.floorHeight / 2))
   frontWall.castShadow = true;
   frontWall.receiveShadow = true;
 
-  const backWall = new Mesh(new BoxGeometry(config.floorWidth + 2.1, 24, -2), material)
+  const backWall = new Mesh(new BoxGeometry(config.floorWidth, 24, 0.1), material)
   backWall.position.set(0, 10, (config.floorHeight / 2))
   backWall.castShadow = true;
   backWall.receiveShadow = true;
 
-  const leftWall = new Mesh(new BoxGeometry(config.floorWidth + 2.1, 24, -2), material)
+  const leftWall = new Mesh(new BoxGeometry(config.floorHeight, 24, 0.1), material)
   leftWall.position.set(-(config.floorWidth / 2), 10, 0)
   leftWall.rotateY(Math.PI / 2)
   leftWall.castShadow = true;
   leftWall.receiveShadow = true;
 
-  const rightWall = new Mesh(new BoxGeometry(config.floorWidth + 2.1, 24, -2), material)
+  const rightWall = new Mesh(new BoxGeometry(config.floorHeight, 24, 0.1), material)
   rightWall.position.set((config.floorWidth / 2), 10, 0)
   rightWall.rotateY(Math.PI / 2)
   rightWall.castShadow = true;
@@ -187,7 +190,7 @@ const renderImage = (painting: Painting) => {
 }
 const renderImages = () => {
   paintingsData.forEach(painting => _scene.add(renderImage(painting)));
-  paintingsData.forEach(painting => createSpotlight(painting.lightConfig.position, 450, painting.lightConfig.targetPosition));
+  paintingsData.forEach(painting => createSpotlight(painting.lightConfig.position, 150, painting.lightConfig.targetPosition));
 }
 
 const startControls = () => {
@@ -225,6 +228,7 @@ const setupScene = () => {
   renderFloor()
   renderCeiling()
   renderImages()
+  load3dModels()
 
   setControls()
   _renderLoopId = requestAnimationFrame(renderLoop)
@@ -265,6 +269,22 @@ const checkCollision = (): boolean => {
   )
   return !!wallsGroup.children.filter((wall) => boundingBox.intersectsBox(wall.BBox)).length
 }
+const checkCollisionForModels = (): boolean => {
+  return models.some(m => {
+    if (!m.boundingBox || !m.scene) {
+      return false
+    }
+    m.boundingBox.setFromObject(m.scene);
+    const boundingBox = new Box3()
+    const worldPosition = new Vector3()
+    _camera.getWorldPosition(worldPosition)
+    boundingBox.setFromCenterAndSize(
+        worldPosition,
+        new Vector3(1, 1, 1),
+    )
+    return boundingBox.intersectsBox(m.boundingBox);;
+  })
+}
 const updateMovement = (delta: number) => {
   let speed = config.movingSpeed * delta
   const prevPosition = _camera.position.clone()
@@ -283,7 +303,7 @@ const updateMovement = (delta: number) => {
   if (keysPressed.ArrowDown || keysPressed.KeyS) {
     _controls.moveForward(-speed)
   }
-  if (checkCollision()) {
+  if (checkCollisionForModels() || checkCollision()) {
     _camera.position.copy(prevPosition)
   }
 }
@@ -319,6 +339,27 @@ const renderLoop = () => {
   updateMovement(clock.getDelta())
   _renderer.render(_scene, _camera)
   _renderLoopId = requestAnimationFrame(renderLoop)
+}
+
+const loader = new GLTFLoader();
+const load3dModel = (model: Model) => {
+  loader.load( model.path, ( gltf ) => {
+    const scene = gltf.scene;
+    model.scene = gltf.scene;
+    scene.castShadow = model.castShadow;
+    scene.receiveShadow = model.receiveShadow;
+    scene.scale.set(model.scale.x, model.scale.y, model.scale.z);
+    scene.position.set(model.position.x, model.position.y, model.position.z);
+    scene.rotateY(MathUtils.degToRad(model.rotateY));
+    model.boundingBox = new Box3().setFromObject(scene);
+    _scene.add(gltf.scene);
+  });
+}
+const models = modelsData;
+const load3dModels = () => {
+  models.forEach(model => {
+    load3dModel(model)
+  })
 }
 
 onMounted(() => {

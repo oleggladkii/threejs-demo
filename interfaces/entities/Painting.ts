@@ -3,12 +3,12 @@ export interface Painting {
   path: string;
   width: number;
   height: number;
-  position: Position;
+  position: Coordinates;
   rotateY: number;
   info: Info;
   lightConfig: LightConfig;
 }
-interface Position {
+interface Coordinates {
   x: number;
   y: number;
   z: number;
@@ -21,7 +21,7 @@ interface Info {
 }
 
 interface LightConfig {
-  position: Position;
-  targetPosition: Position;
+  position: Coordinates;
+  targetPosition: Coordinates;
 }
 
