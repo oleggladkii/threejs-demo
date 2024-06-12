@@ -23,9 +23,9 @@ export function useThree() {
     // ])
 
     const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-    camera.position.set(-38, 4, 0)
+    camera.position.set(0, 4, 0)
 
-    camera.lookAt(0, 0, 0)
+    camera.lookAt(-20, 4, 0)
 
     const ambientLight = new AmbientLight(0xffffff, 1)
     scene.add(ambientLight)

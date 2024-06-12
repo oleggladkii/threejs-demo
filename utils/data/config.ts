@@ -1,5 +1,5 @@
 export const config = {
   movingSpeed: 7,
   floorWidth: 80,
-  floorHeight: 30,
+  floorHeight: 60,
 }

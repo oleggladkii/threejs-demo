@@ -1,54 +1,56 @@
 <template lang="pug">
 .page
   canvas(id="mountId" width="700" height="500" class="canvas")
-  q-card.info-card(ref="infoCardRef", :class="{'fadeIn': isDisplayImageInfo, 'fadeOut': !isDisplayImageInfo}")
+  q-card.info-card(:class="{'fadeIn': isDisplayImageInfo, 'fadeOut': !isDisplayImageInfo, 'expanded': isExpandedImageInfo}")
     template(v-if="selectedPainting?.info.price")
       img(:src='selectedPainting?.path')
+      q-btn.close(v-if="isExpandedImageInfo" round color="primary" icon="close" @click="onCloseImageInfo")
       q-card-section
         .text-h6 {{ selectedPainting?.info.name }}
         .text-subtitle2 by {{ selectedPainting?.info.author }}
-      q-card-section.q-pt-none
-        .text-subtitle2 Current BID {{ selectedPainting?.info.price }}
-        .text-subtitle2 Click to buy
+        .text-h6.q-pt-sm(v-if="!isExpandedImageInfo") Current bid {{ selectedPainting?.info.price }}
+      q-card-section.q-pt-none(v-if="isExpandedImageInfo")
+        .text-subtitle2 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe, velit voluptate. Aliquam, commodi consectetur deserunt esse eveniet expedita labore maxime nihil nisi non nulla odit, quasi totam ut velit veritatis voluptatibus. Accusantium atque dignissimos, dolorum ea eius, magnam numquam placeat rem repellendus temporibus, totam vero voluptatum? Alias commodi consequuntur eveniet quidem recusandae? Assumenda earum maxime modi sit unde. Blanditiis consequatur consequuntur, debitis doloribus error explicabo, illum laboriosam laudantium nisi nulla odit provident quia veniam? Aliquid architecto asperiores atque aut cumque, doloremque, ex facilis fuga ipsa molestiae quas quasi quo repellat saepe similique ullam, velit. Facere iure laborum modi nam quam!
+        .text-h5.q-py-md Current bid {{ selectedPainting?.info.price }}
+        q-btn(color="primary", v-if="isExpandedImageInfo") Place bid
 
-  .overlay(v-if="!controlsLocked")
+  .overlay(v-if="!controlsLocked && !isExpandedImageInfo")
     h3.title(@click="hideControls") Click to start
     q-btn.q-ma-sm(color="primary" to="/") Back
 </template>
 
 <script setup lang="ts">
-  import {
-    type PerspectiveCamera,
-    PlaneGeometry,
-    type Scene,
-    type WebGLRenderer,
-    BoxGeometry,
-    Mesh,
-    MeshPhysicalMaterial,
-    DoubleSide,
-    TextureLoader,
-    Group,
-    MirroredRepeatWrapping,
-    Box3,
-    Vector3,
-    SphereGeometry,
-    Clock,
-    SpotLight,
-    SpotLightHelper,
-    MeshStandardMaterial,
-    MathUtils,
-  } from 'three'
+import {
+  type PerspectiveCamera,
+  PlaneGeometry,
+  type Scene,
+  type WebGLRenderer,
+  BoxGeometry,
+  Mesh,
+  DoubleSide,
+  TextureLoader,
+  Group,
+  MirroredRepeatWrapping,
+  Box3,
+  Vector3,
+  Clock,
+  SpotLight,
+  SpotLightHelper,
+  MeshStandardMaterial,
+  MathUtils,
+} from 'three'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
 import floorTexture from '@/assets/images/textures/woodfloor1k.jpg'
 import ceilingTexture from '@/assets/images/textures/rubber.jpg'
-import wallTexture from '@/assets/images/textures/bricks-white.jpg'
+import wallTexture from '@/assets/images/textures/marble.jpg'
 import { useThree } from '@/composables/useThree'
 import type {Painting} from "@/interfaces/entities/Painting";
 import {paintingsData} from "@/utils/data/paintingsData";
 import {config} from "@/utils/data/config";
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-  import type {Model} from "~/interfaces/entities/Model";
-  import {modelsData} from "~/utils/data/modelsData";
+import type {Model} from "~/interfaces/entities/Model";
+import {modelsData} from "~/utils/data/modelsData";
+import {lightData} from "~/utils/data/lightData";
 
 definePageMeta({
   layout: 'empty',
@@ -59,36 +61,16 @@ let _camera: PerspectiveCamera
 let _renderer: WebGLRenderer
 let _controls: PointerLockControls
 let _renderLoopId: number
-let _box: Mesh
 const { initThree, cleanUpThree } = useThree()
 const canvas = computed(() => document.getElementById('mountId') as HTMLCanvasElement)
 
-
-const animateObject = () => {
-  _box.rotation.x += 0.003
-  _box.rotation.y += 0.005
-}
-const renderCube = () => {
-  const textureSphere = new TextureLoader().load(wallTexture)
-  const geometry = new SphereGeometry(2, 100, 100)
-  const material = new MeshPhysicalMaterial({
-    map: textureSphere,
-    roughness: 0.1,
-    reflectivity: 1,
-  })
-  _box = new Mesh(geometry, material)
-  _box.castShadow = true;
-  _box.position.set(18, 2.5, 10)
-  _scene.add(_box)
-}
-
-const createSpotlight = (lightPosition: { x: number, y: number, z: number }, intensity:number, targetPosition: { x: number, y: number, z: number }) => {
+const createSpotlight = (lightPosition: { x: number, y: number, z: number }, intensity:number, targetPosition: { x: number, y: number, z: number }, angle: number) => {
   const spotlight = new SpotLight(0xffffff, intensity);
   spotlight.position.set(lightPosition.x, lightPosition.y, lightPosition.z);
   spotlight.castShadow = true;
   spotlight.target.position.copy(new Vector3(targetPosition.x, targetPosition.y, targetPosition.z));
-  spotlight.angle = MathUtils.degToRad(50);
-  spotlight.penumbra = 1;
+  spotlight.angle = MathUtils.degToRad(angle);
+  spotlight.penumbra = 0.5;
   spotlight.distance = 20;
 
   spotlight.shadow.mapSize.width = 1024;
@@ -110,7 +92,7 @@ const renderFloor = () => {
   const textureFloor = new TextureLoader().load(floorTexture)
   textureFloor.wrapS = MirroredRepeatWrapping
   textureFloor.wrapT = MirroredRepeatWrapping
-  textureFloor.repeat.set(16, 4)
+  textureFloor.repeat.set(4, 4)
 
   const floorPlane = new Mesh(new PlaneGeometry(config.floorWidth + 1, config.floorHeight + 1), new MeshStandardMaterial({ map: textureFloor, side: DoubleSide }))
   floorPlane.rotateX(Math.PI / 2)
@@ -124,7 +106,7 @@ const renderCeiling = () => {
   const textureCeiling = new TextureLoader().load(ceilingTexture)
   textureCeiling.wrapS = MirroredRepeatWrapping
   textureCeiling.wrapT = MirroredRepeatWrapping
-  textureCeiling.repeat.set(10, 2)
+  textureCeiling.repeat.set(2, 2)
 
   const ceilingPlane = new Mesh(new PlaneGeometry(config.floorWidth, config.floorHeight), new MeshStandardMaterial({ map: textureCeiling }))
   ceilingPlane.rotateX(Math.PI / 2)
@@ -190,7 +172,10 @@ const renderImage = (painting: Painting) => {
 }
 const renderImages = () => {
   paintingsData.forEach(painting => _scene.add(renderImage(painting)));
-  paintingsData.forEach(painting => createSpotlight(painting.lightConfig.position, 150, painting.lightConfig.targetPosition));
+}
+
+const renderLights = () => {
+  lightData.forEach(light => createSpotlight(light.position, light.intensity, light.targetPosition, light.angle));
 }
 
 const startControls = () => {
@@ -223,12 +208,12 @@ const setupScene = () => {
   _renderer = renderer
   _controls = new PointerLockControls(_camera, document.body)
 
-  // renderCube()
   renderWalls()
   renderFloor()
   renderCeiling()
   renderImages()
   load3dModels()
+  renderLights()
 
   setControls()
   _renderLoopId = requestAnimationFrame(renderLoop)
@@ -308,24 +293,34 @@ const updateMovement = (delta: number) => {
   }
 }
 
-const onBuyPainting = () => {
-  infoCardRef.value?.$el.classList.add('expanded')
+const isExpandedImageInfo = ref<boolean>(false)
+const onExpandImageInfo = () => {
+  isExpandedImageInfo.value = true
+  document.removeEventListener('click', onExpandImageInfo)
+  _controls.unlock()
+}
+const onCloseImageInfo = () => {
+  isExpandedImageInfo.value = false
+  _controls.lock()
 }
 
-const infoCardRef = ref<HTMLDivElement | null>(null)
 const isDisplayImageInfo = ref(false)
 const displayImageInfo = () => {
-  document.addEventListener('click', onBuyPainting)
+  if (!isDisplayImageInfo.value) {
+    document.addEventListener('click', onExpandImageInfo)
+  }
   isDisplayImageInfo.value = true;
 }
 const hideImageInfo = () => {
-  document.removeEventListener('click', onBuyPainting)
+  if (isDisplayImageInfo.value) {
+    document.removeEventListener('click', onExpandImageInfo)
+  }
   isDisplayImageInfo.value = false;
+  isExpandedImageInfo.value = false;
 }
 
 const selectedPainting = ref<Painting | null>(null)
 const renderLoop = () => {
-  // animateObject()
   let isSelectedPainting = false;
   paintingsData.forEach(painting => {
     const distanceAllowed = 7;
@@ -423,6 +418,25 @@ onBeforeUnmount(() => {
       top: 0;
       opacity: 0;
       animation: cardFadeOut 0.3s ease-out;
+    }
+    &.expanded {
+      width: 50%;
+      right: 25%;
+      max-height: 90vh;
+      top: 5vh;
+      overflow: scroll;
+      opacity: 1;
+      padding: 12px;
+      text-align: center;
+      img {
+        width: 50%;
+        margin: 0 auto;
+      }
+      .close {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+      }
     }
   }
   @keyframes cardFadeIn {

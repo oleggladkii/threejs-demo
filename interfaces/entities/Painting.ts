@@ -6,7 +6,6 @@ export interface Painting {
   position: Coordinates;
   rotateY: number;
   info: Info;
-  lightConfig: LightConfig;
 }
 interface Coordinates {
   x: number;
@@ -19,9 +18,3 @@ interface Info {
   author: string;
   price: string;
 }
-
-interface LightConfig {
-  position: Coordinates;
-  targetPosition: Coordinates;
-}
-
