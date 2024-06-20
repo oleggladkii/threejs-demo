@@ -12,9 +12,9 @@ import {config} from "~/utils/data/config";
 export const paintingsData: Painting[] = [{
   id: 1,
   path: painting1,
-  width: 8,
-  height: 4.88,
-  position: {x: -6, y: 5, z: -(config.floorHeight / 2) + 0.1},
+  width: 12,
+  height: 7.32,
+  position: {x: -12, y: 6, z: -(config.floorHeight / 2) + 1.1},
   rotateY: 0,
   info: {
     name: 'Starry Night (1889)',
@@ -25,9 +25,9 @@ export const paintingsData: Painting[] = [{
   {
     id: 2,
     path: painting2,
-    width: 6,
-    height: 6,
-    position: {x: 6, y: 5, z: -(config.floorHeight / 2) + 0.1},
+    width: 8,
+    height: 8,
+    position: {x: 2, y: 6, z: -(config.floorHeight / 2) + 1.1},
     rotateY: 0,
     info: {
       name: 'Mona Lisa (1503)',
@@ -37,9 +37,9 @@ export const paintingsData: Painting[] = [{
   }, {
     id: 3,
     path: painting3,
-    width: 8,
-    height: 5.44,
-    position: {x: 18, y: 5, z: -(config.floorHeight / 2) + 0.1},
+    width: 12,
+    height: 8.16,
+    position: {x: 16, y: 6, z: -(config.floorHeight / 2) + 1.1},
     rotateY: 0,
     info: {
       name: 'The Wedding at Cana (1562)',
@@ -49,9 +49,9 @@ export const paintingsData: Painting[] = [{
   }, {
     id: 4,
     path: painting4,
-    width: 8,
-    height: 5,
-    position: {x: 30, y: 5, z: -(config.floorHeight / 2) + 0.1},
+    width: 12,
+    height: 7.5,
+    position: {x: 32, y: 6, z: -(config.floorHeight / 2) + 1.1},
     rotateY: 0,
     info: {
       name: 'The Coronation of Napoleon (1807)',
@@ -61,9 +61,9 @@ export const paintingsData: Painting[] = [{
   }, {
     id: 5,
     path: painting5,
-    width: 8,
-    height: 6.2,
-    position: {x: -6, y: 5, z: (config.floorHeight / 2) - 0.1},
+    width: 12,
+    height: 9.3,
+    position: {x: -12, y: 6, z: (config.floorHeight / 2) - 1.1},
     rotateY: Math.PI,
     info: {
       name: 'The Apotheosis of Homer (1827)',
@@ -73,9 +73,9 @@ export const paintingsData: Painting[] = [{
   }, {
     id: 6,
     path: painting6,
-    width: 8,
-    height: 6.15,
-    position: {x: 6, y: 5, z: (config.floorHeight / 2) - 0.1},
+    width: 12,
+    height: 9.22,
+    position: {x: 4, y: 6, z: (config.floorHeight / 2) - 1.1},
     rotateY: Math.PI,
     info: {
       name: 'The Fortune Teller (1594)',
@@ -85,9 +85,9 @@ export const paintingsData: Painting[] = [{
   }, {
     id: 7,
     path: painting7,
-    width: 8,
-    height: 5.7,
-    position: {x: 18, y: 5, z: (config.floorHeight / 2) - 0.1},
+    width: 12,
+    height: 8.55,
+    position: {x: 20, y: 6, z: (config.floorHeight / 2) - 1.1},
     rotateY: Math.PI,
     info: {
       name: 'Et in Arcadia ego (1665)',
@@ -97,9 +97,9 @@ export const paintingsData: Painting[] = [{
   }, {
     id: 8,
     path: painting8,
-    width: 8,
-    height: 5.25,
-    position: {x: 30, y: 5, z: (config.floorHeight / 2) - 0.1},
+    width: 12,
+    height: 7.87,
+    position: {x: 36, y: 6, z: (config.floorHeight / 2) - 1.1},
     rotateY: Math.PI,
     info: {
       name: 'The Embarkation for Cythera (1717)',

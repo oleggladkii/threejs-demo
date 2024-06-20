@@ -3,6 +3,7 @@ import type {GLTF} from "three/examples/jsm/loaders/GLTFLoader";
 
 export interface Model {
   id: number;
+  group: string;
   path: string;
   scale: Coordinates;
   position: Coordinates;

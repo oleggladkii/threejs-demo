@@ -20,26 +20,27 @@
 </template>
 
 <script setup lang="ts">
-import {
-  type PerspectiveCamera,
-  PlaneGeometry,
-  type Scene,
-  type WebGLRenderer,
-  BoxGeometry,
-  Mesh,
-  DoubleSide,
-  TextureLoader,
-  Group,
-  MirroredRepeatWrapping,
-  Box3,
-  Vector3,
-  Clock,
-  SpotLight,
-  SpotLightHelper,
-  MeshStandardMaterial,
-  MathUtils,
-} from 'three'
+  import {
+    type PerspectiveCamera,
+    PlaneGeometry,
+    type Scene,
+    type WebGLRenderer,
+    BoxGeometry,
+    Mesh,
+    DoubleSide,
+    TextureLoader,
+    Group,
+    MirroredRepeatWrapping,
+    Box3,
+    Vector3,
+    Clock,
+    SpotLight,
+    SpotLightHelper,
+    MeshStandardMaterial,
+    MathUtils, Shape, ExtrudeGeometry, MeshPhongMaterial, ShapeGeometry, MeshBasicMaterial,
+  } from 'three'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
+import grassTexture from '@/assets/images/textures/grass.jpg'
 import floorTexture from '@/assets/images/textures/woodfloor1k.jpg'
 import ceilingTexture from '@/assets/images/textures/rubber.jpg'
 import wallTexture from '@/assets/images/textures/marble.jpg'
@@ -51,6 +52,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type {Model} from "~/interfaces/entities/Model";
 import {modelsData} from "~/utils/data/modelsData";
 import {lightData} from "~/utils/data/lightData";
+  import type {GLTF} from "three/examples/jsm/loaders/GLTFLoader";
 
 definePageMeta({
   layout: 'empty',
@@ -102,6 +104,21 @@ const renderFloor = () => {
   _scene.add(floorPlane)
 }
 
+const renderOutdoor = () => {
+  const textureOutdoor = new TextureLoader().load(grassTexture)
+  textureOutdoor.wrapS = MirroredRepeatWrapping
+  textureOutdoor.wrapT = MirroredRepeatWrapping
+  textureOutdoor.repeat.set(12, 12)
+
+  // const outdoorPlane = new Mesh(new PlaneGeometry(400, 400, new MeshStandardMaterial({ map: textureFloor, side: DoubleSide })))
+  const outdoorPlane = new Mesh(new PlaneGeometry(400, 400), new MeshStandardMaterial({ map: textureOutdoor, side: DoubleSide }))
+  outdoorPlane.rotateX(Math.PI / 2)
+  outdoorPlane.position.set(200, -1.8, 0)
+  outdoorPlane.receiveShadow = true;
+
+  _scene.add(outdoorPlane)
+}
+
 const renderCeiling = () => {
   const textureCeiling = new TextureLoader().load(ceilingTexture)
   textureCeiling.wrapS = MirroredRepeatWrapping
@@ -125,29 +142,58 @@ const renderWalls = () => {
   textureWall.repeat.set(4, 3)
   const material = new MeshStandardMaterial({ map: textureWall })
 
-  const frontWall = new Mesh(new BoxGeometry(config.floorWidth, 24, 0.1), material)
+  const frontWall = new Mesh(new BoxGeometry(config.floorWidth, 24, 2), material)
   frontWall.position.set(0, 10, -(config.floorHeight / 2))
   frontWall.castShadow = true;
   frontWall.receiveShadow = true;
 
-  const backWall = new Mesh(new BoxGeometry(config.floorWidth, 24, 0.1), material)
+  const backWall = new Mesh(new BoxGeometry(config.floorWidth, 24, 2), material)
   backWall.position.set(0, 10, (config.floorHeight / 2))
   backWall.castShadow = true;
   backWall.receiveShadow = true;
 
-  const leftWall = new Mesh(new BoxGeometry(config.floorHeight, 24, 0.1), material)
+  const leftWall = new Mesh(new BoxGeometry(config.floorHeight, 24, 2), material)
   leftWall.position.set(-(config.floorWidth / 2), 10, 0)
   leftWall.rotateY(Math.PI / 2)
   leftWall.castShadow = true;
   leftWall.receiveShadow = true;
 
-  const rightWall = new Mesh(new BoxGeometry(config.floorHeight, 24, 0.1), material)
-  rightWall.position.set((config.floorWidth / 2), 10, 0)
-  rightWall.rotateY(Math.PI / 2)
+  const rightWallShape = new Shape();
+  rightWallShape.moveTo(0, -2);
+  rightWallShape.lineTo(60, -2);
+  rightWallShape.lineTo(60, 23);
+  rightWallShape.lineTo(0, 23);
+  rightWallShape.lineTo(0, -2);
+
+  const windowShapeOne = new Shape();
+  windowShapeOne.moveTo(5, 2);
+  windowShapeOne.lineTo(16, 2);
+  windowShapeOne.lineTo(16, 16);
+  windowShapeOne.lineTo(5, 16);
+  windowShapeOne.lineTo(5, 2);
+
+  const windowShapeTwo = new Shape();
+  windowShapeTwo.moveTo(44, 2);
+  windowShapeTwo.lineTo(55, 2);
+  windowShapeTwo.lineTo(55, 16);
+  windowShapeTwo.lineTo(44, 16);
+  windowShapeTwo.lineTo(44, 2);
+
+  rightWallShape.holes.push(windowShapeOne);
+  rightWallShape.holes.push(windowShapeTwo);
+
+  const extrudeSettings = {
+    bevelEnabled: true
+  };
+  const rightWallGeometry = new ExtrudeGeometry(rightWallShape, extrudeSettings);
+
+  const rightWall = new Mesh(rightWallGeometry, material);
+  rightWall.position.set((config.floorWidth / 2), 0, 30);
+  rightWall.rotateY(Math.PI / 2);
   rightWall.castShadow = true;
   rightWall.receiveShadow = true;
 
-  wallsGroup.add(frontWall, backWall, leftWall, rightWall)
+  wallsGroup.add(frontWall, backWall, rightWall, leftWall)
 
   wallsGroup.children.forEach((wall) => {
     wall.BBox = new Box3()
@@ -210,6 +256,7 @@ const setupScene = () => {
 
   renderWalls()
   renderFloor()
+  renderOutdoor()
   renderCeiling()
   renderImages()
   load3dModels()
@@ -336,24 +383,34 @@ const renderLoop = () => {
   _renderLoopId = requestAnimationFrame(renderLoop)
 }
 
-const loader = new GLTFLoader();
-const load3dModel = (model: Model) => {
-  loader.load( model.path, ( gltf ) => {
-    const scene = gltf.scene;
-    model.scene = gltf.scene;
-    scene.castShadow = model.castShadow;
-    scene.receiveShadow = model.receiveShadow;
-    scene.scale.set(model.scale.x, model.scale.y, model.scale.z);
-    scene.position.set(model.position.x, model.position.y, model.position.z);
-    scene.rotateY(MathUtils.degToRad(model.rotateY));
-    model.boundingBox = new Box3().setFromObject(scene);
-    _scene.add(gltf.scene);
-  });
+const render3dModel = (model: Model, gltfScene: GLTF) => {
+  model.scene = gltfScene;
+  gltfScene.castShadow = model.castShadow;
+  gltfScene.receiveShadow = model.receiveShadow;
+  gltfScene.scale.set(model.scale.x, model.scale.y, model.scale.z);
+  gltfScene.position.set(model.position.x, model.position.y, model.position.z);
+  gltfScene.rotateY(MathUtils.degToRad(model.rotateY));
+  model.boundingBox = new Box3().setFromObject(gltfScene);
+  models.push(model)
+  _scene.add(gltfScene);
 }
-const models = modelsData;
+
+const models = [] as Model[];
+const groupedModels: Model[][] = Object.values(modelsData.reduce((acc: {[group: string]: Model[] }, item: Model) => {
+  if (!acc[item.group]) {
+    acc[item.group] = [];
+  }
+  acc[item.group].push(item);
+  return acc;
+}, {} as {[key: string]: Model[] }));
+const loader = new GLTFLoader();
 const load3dModels = () => {
-  models.forEach(model => {
-    load3dModel(model)
+  groupedModels.forEach(modelsArray => {
+    loader.load( modelsArray[0].path, ( gltf ) => {
+      modelsArray.forEach(m => {
+        render3dModel(m, gltf.scene.clone())
+      })
+    })
   })
 }
 
