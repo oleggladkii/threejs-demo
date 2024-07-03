@@ -1,4 +1,4 @@
-import type { BufferGeometry, Material, Texture, Mesh, Group, Object3D } from 'three'
+import type {BufferGeometry, Material, Texture, Mesh, Group, Object3D, SpotLight} from 'three'
 
 export function disposeObject(object: Group | Object3D) {
   if (!object) return
@@ -33,4 +33,18 @@ export function disposeObject(object: Group | Object3D) {
   for (const entry of geometries) {
     entry[1].dispose()
   }
+}
+
+export function disposeSpotLight(scene: Group | Object3D, spotLights: SpotLight[]) {
+  spotLights.forEach(light => {
+    if (light.parent) {
+      light.parent.remove(light);
+    }
+    if (light.shadow) {
+      light.shadow.map?.dispose();
+    }
+    if (light.target) {
+      scene.remove(light.target);
+    }
+  })
 }

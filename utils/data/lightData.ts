@@ -1,4 +1,5 @@
 import type {Light} from "~/interfaces/entities/Light";
+import {config} from "~/utils/data/config";
 
 export const lightData: Light[] = [
   {
@@ -14,7 +15,9 @@ export const lightData: Light[] = [
       z: -18
     },
     angle: 40,
-    intensity: 1000
+    intensity: 1000,
+    distance: 20,
+    dayTime: false
   },
   {
     id: 2,
@@ -29,7 +32,9 @@ export const lightData: Light[] = [
       z: -18
     },
     angle: 40,
-    intensity: 1000
+    intensity: 1000,
+    distance: 20,
+    dayTime: false
   }, {
     id: 3,
     position: {
@@ -43,7 +48,9 @@ export const lightData: Light[] = [
       z: -18
     },
     angle: 40,
-    intensity: 1000
+    intensity: 1000,
+    distance: 20,
+    dayTime: false
   }, {
     id: 4,
     position: {
@@ -57,7 +64,9 @@ export const lightData: Light[] = [
       z: -18
     },
     angle: 40,
-    intensity: 1000
+    intensity: 1000,
+    distance: 20,
+    dayTime: false
   }, {
     id: 5,
     position: {
@@ -71,7 +80,9 @@ export const lightData: Light[] = [
       z: 18
     },
     angle: 40,
-    intensity: 1000
+    intensity: 1000,
+    distance: 20,
+    dayTime: false
   }, {
     id: 6,
     position: {
@@ -85,7 +96,9 @@ export const lightData: Light[] = [
       z: 18
     },
     angle: 40,
-    intensity: 1000
+    intensity: 1000,
+    distance: 20,
+    dayTime: false
   }, {
     id: 7,
     position: {
@@ -99,7 +112,9 @@ export const lightData: Light[] = [
       z: 18
     },
     angle: 40,
-    intensity: 1000
+    intensity: 1000,
+    distance: 20,
+    dayTime: false
   }, {
     id: 8,
     position: {
@@ -113,21 +128,25 @@ export const lightData: Light[] = [
       z: 18
     },
     angle: 40,
-    intensity: 1000
+    intensity: 1000,
+    distance: 20,
+    dayTime: false
   },
-  // {
-  //   id: 9,
-  //   position: {
-  //     x: -24,
-  //     y: 16,
-  //     z: 0
-  //   },
-  //   targetPosition: {
-  //     x: -24,
-  //     y: -18,
-  //     z: 0
-  //   },
-  //   angle: 55,
-  //   intensity: 5000
-  // }
+  {
+    id: 9,
+    position: {
+      x: (config.floorWidth) + 40,
+      y: 60,
+      z: 40
+    },
+    targetPosition: {
+      x: 20,
+      y: -3,
+      z: 0
+    },
+    angle: 40,
+    intensity: 20000,
+    distance: 200,
+    dayTime: true
+  },
 ]

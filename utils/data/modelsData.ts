@@ -3,46 +3,6 @@ import {config} from "~/utils/data/config";
 
 export const modelsData: Model[] = [
   {
-    id: 1,
-    group: 'sofa',
-    path: 'assets/models/sofa/scene.gltf',
-    scale: {
-      x: 10,
-      y: 10,
-      z: 10
-    },
-    position: {
-      x: -30,
-      y: 1,
-      z: 25
-    },
-    rotateY: 33,
-    castShadow: true,
-    receiveShadow: true,
-    boundingBox: null,
-    scene: null,
-  },
-  {
-    id: 2,
-    group: 'sofa',
-    path: 'assets/models/sofa/scene.gltf',
-    scale: {
-      x: 10,
-      y: 10,
-      z: 10
-    },
-    position: {
-      x: -30,
-      y: 1,
-      z: -25
-    },
-    rotateY: 213,
-    castShadow: true,
-    receiveShadow: true,
-    boundingBox: null,
-    scene: null,
-  },
-  {
     id: 3,
     group: 'ceiling-lamp',
     path: 'assets/models/ceiling-lamp/scene.gltf',
@@ -248,7 +208,7 @@ export const modelsData: Model[] = [
     path: 'assets/models/painting-frame/scene.gltf',
     scale: {
       x: 5,
-      y: 2,
+      y: 2.1,
       z: 3
     },
     position: {
@@ -361,5 +321,267 @@ export const modelsData: Model[] = [
     receiveShadow: true,
     boundingBox: null,
     scene: null,
-  }
+  },
+  {
+    id: 17,
+    group: 'door',
+    path: 'assets/models/realistic-door/scene.gltf',
+    scale: {
+      x: 1,
+      y: 2.5,
+      z: 2.5
+    },
+    position: {
+      x: (config.floorWidth / 2) - 0.5,
+      y: -1,
+      z: 0
+    },
+    rotateY: 180,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 19,
+    group: 'window',
+    path: 'assets/models/square-window/scene.gltf',
+    scale: {
+      x: 1,
+      y: 12,
+      z: 12
+    },
+    position: {
+      x: (config.floorWidth / 2) + 0.5,
+      y: 4.7,
+      z: -8
+    },
+    rotateY: 0,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  // left window
+  {
+    id: 20,
+    group: 'window',
+    path: 'assets/models/square-window/scene.gltf',
+    scale: {
+      x: 1,
+      y: 12,
+      z: 12
+    },
+    position: {
+      x: (config.floorWidth / 2) + 0.5,
+      y: 4.7,
+      z: -13.3
+    },
+    rotateY: 0,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 21,
+    group: 'window',
+    path: 'assets/models/square-window/scene.gltf',
+    scale: {
+      x: 1,
+      y: 12,
+      z: 12
+    },
+    position: {
+      x: (config.floorWidth / 2) + 0.5,
+      y: 9.7,
+      z: -13.3
+    },
+    rotateY: 0,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 22,
+    group: 'window',
+    path: 'assets/models/square-window/scene.gltf',
+    scale: {
+      x: 5,
+      y: 12,
+      z: 12
+    },
+    position: {
+      x: (config.floorWidth / 2)  + 0.5,
+      y: 9.7,
+      z: -8
+    },
+    rotateY: 0,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 23,
+    group: 'window',
+    path: 'assets/models/square-window/scene.gltf',
+    scale: {
+      x: 1,
+      y: 12,
+      z: 12
+    },
+    position: {
+      x: (config.floorWidth / 2) + 0.5,
+      y: 15,
+      z: -8
+    },
+    rotateY: 0,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 24,
+    group: 'window',
+    path: 'assets/models/square-window/scene.gltf',
+    scale: {
+      x: 1,
+      y: 12,
+      z: 12
+    },
+    position: {
+      x: (config.floorWidth / 2) + 0.5,
+      y: 15,
+      z: -13.3
+    },
+    rotateY: 0,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  //right window
+  {
+    id: 25,
+    group: 'window',
+    path: 'assets/models/square-window/scene.gltf',
+    scale: {
+      x: 1,
+      y: 12,
+      z: 12
+    },
+    position: {
+      x: (config.floorWidth / 2) + 0.5,
+      y: 4.7,
+      z: 21.7
+    },
+    rotateY: 0,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 26,
+    group: 'window',
+    path: 'assets/models/square-window/scene.gltf',
+    scale: {
+      x: 1,
+      y: 12,
+      z: 12
+    },
+    position: {
+      x: (config.floorWidth / 2) + 0.5,
+      y: 4.7,
+      z: 27
+    },
+    rotateY: 0,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 27,
+    group: 'window',
+    path: 'assets/models/square-window/scene.gltf',
+    scale: {
+      x: 1,
+      y: 12,
+      z: 12
+    },
+    position: {
+      x: (config.floorWidth / 2) + 0.5,
+      y: 9.7,
+      z: 21.7
+    },
+    rotateY: 0,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 28,
+    group: 'window',
+    path: 'assets/models/square-window/scene.gltf',
+    scale: {
+      x: 5,
+      y: 12,
+      z: 12
+    },
+    position: {
+      x: (config.floorWidth / 2)  + 0.5,
+      y: 9.7,
+      z: 27
+    },
+    rotateY: 0,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 29,
+    group: 'window',
+    path: 'assets/models/square-window/scene.gltf',
+    scale: {
+      x: 1,
+      y: 12,
+      z: 12
+    },
+    position: {
+      x: (config.floorWidth / 2) + 0.5,
+      y: 15,
+      z: 21.7
+    },
+    rotateY: 0,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 30,
+    group: 'window',
+    path: 'assets/models/square-window/scene.gltf',
+    scale: {
+      x: 1,
+      y: 12,
+      z: 12
+    },
+    position: {
+      x: (config.floorWidth / 2) + 0.5,
+      y: 15,
+      z: 27
+    },
+    rotateY: 0,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
 ]

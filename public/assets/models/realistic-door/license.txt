@@ -1,7 +1,7 @@
 Model Information:
-* title:	3f7d74308a05_8e73d9015347_19th_century_sofa_g
-* source:	https://sketchfab.com/3d-models/3f7d74308a05-8e73d9015347-19th-century-sofa-g-de1b6af7d3ac479d8812cc2c7b64b175
-* author:	whimzy (https://sketchfab.com/whimzy)
+* title:	realistic door
+* source:	https://sketchfab.com/3d-models/realistic-door-ec835c0c500c487a93f9fcd47535a554
+* author:	MR. A K (https://sketchfab.com/Ahlad_kondli)
 
 Model License:
 * license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)

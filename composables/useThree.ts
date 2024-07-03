@@ -15,9 +15,9 @@ export function useThree() {
     scene.background = new TextureLoader().load(skyTexture)
 
     const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-    camera.position.set(32, 4, 0)
+    camera.position.set(32, 5, 0)
 
-    camera.lookAt(0, 4, 0)
+    camera.lookAt(0, 5, 0)
 
     const ambientLight = new AmbientLight(0xffffff, 1)
     scene.add(ambientLight)
@@ -30,6 +30,11 @@ export function useThree() {
     })
     renderer.shadowMap.enabled = true;
     renderer.setClearColor('blue', 0.3);
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
 
     return { scene, camera, renderer }
   }

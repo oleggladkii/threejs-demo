@@ -20,25 +20,25 @@
 </template>
 
 <script setup lang="ts">
-  import {
-    type PerspectiveCamera,
-    PlaneGeometry,
-    type Scene,
-    type WebGLRenderer,
-    BoxGeometry,
-    Mesh,
-    DoubleSide,
-    TextureLoader,
-    Group,
-    MirroredRepeatWrapping,
-    Box3,
-    Vector3,
-    Clock,
-    SpotLight,
-    SpotLightHelper,
-    MeshStandardMaterial,
-    MathUtils, Shape, ExtrudeGeometry, MeshPhongMaterial, ShapeGeometry, MeshBasicMaterial,
-  } from 'three'
+import {
+  type PerspectiveCamera,
+  PlaneGeometry,
+  type Scene,
+  type WebGLRenderer,
+  BoxGeometry,
+  Mesh,
+  DoubleSide,
+  TextureLoader,
+  Group,
+  MirroredRepeatWrapping,
+  Box3,
+  Vector3,
+  Clock,
+  SpotLight,
+  SpotLightHelper,
+  MeshStandardMaterial,
+  MathUtils, Shape, ExtrudeGeometry, LoadingManager, BoxHelper,
+} from 'three'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
 import grassTexture from '@/assets/images/textures/grass.jpg'
 import floorTexture from '@/assets/images/textures/woodfloor1k.jpg'
@@ -52,7 +52,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type {Model} from "~/interfaces/entities/Model";
 import {modelsData} from "~/utils/data/modelsData";
 import {lightData} from "~/utils/data/lightData";
-  import type {GLTF} from "three/examples/jsm/loaders/GLTFLoader";
+import type {GLTF} from "three/examples/jsm/loaders/GLTFLoader";
+import {DRACOLoader} from "three/examples/jsm/loaders/DRACOLoader";
+import type {Light} from "~/interfaces/entities/Light";
+import {disposeSpotLight} from "~/utils/disposeUtils";
 
 definePageMeta({
   layout: 'empty',
@@ -66,20 +69,24 @@ let _renderLoopId: number
 const { initThree, cleanUpThree } = useThree()
 const canvas = computed(() => document.getElementById('mountId') as HTMLCanvasElement)
 
-const createSpotlight = (lightPosition: { x: number, y: number, z: number }, intensity:number, targetPosition: { x: number, y: number, z: number }, angle: number) => {
-  const spotlight = new SpotLight(0xffffff, intensity);
-  spotlight.position.set(lightPosition.x, lightPosition.y, lightPosition.z);
+const createSpotlight = (light: Light) => {
+  if (light.dayTime !== config.dayTime) {
+    return
+  }
+  const spotlight = new SpotLight(0xffffff, light.intensity);
+  spotlight.position.set(light.position.x, light.position.y, light.position.z);
   spotlight.castShadow = true;
-  spotlight.target.position.copy(new Vector3(targetPosition.x, targetPosition.y, targetPosition.z));
-  spotlight.angle = MathUtils.degToRad(angle);
+  spotlight.target.position.copy(new Vector3(light.targetPosition.x, light.targetPosition.y, light.targetPosition.z));
+  spotlight.angle = MathUtils.degToRad(light.angle);
   spotlight.penumbra = 0.5;
-  spotlight.distance = 20;
+  spotlight.distance = light.distance;
 
   spotlight.shadow.mapSize.width = 1024;
   spotlight.shadow.mapSize.height = 1024;
   spotlight.shadow.camera.near = 0.5;
   spotlight.shadow.camera.far = 50;
 
+  spotlights.push(spotlight);
   _scene.add(spotlight);
   _scene.add(spotlight.target);
 
@@ -110,7 +117,6 @@ const renderOutdoor = () => {
   textureOutdoor.wrapT = MirroredRepeatWrapping
   textureOutdoor.repeat.set(12, 12)
 
-  // const outdoorPlane = new Mesh(new PlaneGeometry(400, 400, new MeshStandardMaterial({ map: textureFloor, side: DoubleSide })))
   const outdoorPlane = new Mesh(new PlaneGeometry(400, 400), new MeshStandardMaterial({ map: textureOutdoor, side: DoubleSide }))
   outdoorPlane.rotateX(Math.PI / 2)
   outdoorPlane.position.set(200, -1.8, 0)
@@ -128,6 +134,9 @@ const renderCeiling = () => {
   const ceilingPlane = new Mesh(new PlaneGeometry(config.floorWidth, config.floorHeight), new MeshStandardMaterial({ map: textureCeiling }))
   ceilingPlane.rotateX(Math.PI / 2)
   ceilingPlane.position.set(0, 20, 0)
+
+  ceilingPlane.castShadow = true;
+  ceilingPlane.receiveShadow = true;
 
   _scene.add(ceilingPlane)
 }
@@ -167,20 +176,28 @@ const renderWalls = () => {
 
   const windowShapeOne = new Shape();
   windowShapeOne.moveTo(5, 2);
-  windowShapeOne.lineTo(16, 2);
-  windowShapeOne.lineTo(16, 16);
-  windowShapeOne.lineTo(5, 16);
-  windowShapeOne.lineTo(5, 2);
+  windowShapeOne.lineTo(18, 2);
+  windowShapeOne.lineTo(18, 18);
+  windowShapeOne.lineTo(7, 18);
+  windowShapeOne.lineTo(7, 2);
 
   const windowShapeTwo = new Shape();
-  windowShapeTwo.moveTo(44, 2);
-  windowShapeTwo.lineTo(55, 2);
-  windowShapeTwo.lineTo(55, 16);
-  windowShapeTwo.lineTo(44, 16);
-  windowShapeTwo.lineTo(44, 2);
+  windowShapeTwo.moveTo(40, 2);
+  windowShapeTwo.lineTo(53, 2);
+  windowShapeTwo.lineTo(53, 18);
+  windowShapeTwo.lineTo(42, 18);
+  windowShapeTwo.lineTo(42, 2);
+
+  const doorShape = new Shape();
+  doorShape.moveTo(27, -2);
+  doorShape.lineTo(34, -2);
+  doorShape.lineTo(34, 11);
+  doorShape.lineTo(27, 11);
+  doorShape.lineTo(27, -2);
 
   rightWallShape.holes.push(windowShapeOne);
   rightWallShape.holes.push(windowShapeTwo);
+  rightWallShape.holes.push(doorShape);
 
   const extrudeSettings = {
     bevelEnabled: true
@@ -220,8 +237,10 @@ const renderImages = () => {
   paintingsData.forEach(painting => _scene.add(renderImage(painting)));
 }
 
+let spotlights = [] as SpotLight[]
 const renderLights = () => {
-  lightData.forEach(light => createSpotlight(light.position, light.intensity, light.targetPosition, light.angle));
+  spotlights = []
+  lightData.forEach(light => createSpotlight(light));
 }
 
 const startControls = () => {
@@ -287,6 +306,9 @@ const onKeyUp = (event: KeyboardEvent) => {
   if (controlsLocked.value && event.code in keysPressed) {
     keysPressed[event.code] = false
   }
+  if (event.code === 'KeyL') {
+    toggleDay()
+  }
 }
 document.addEventListener('keydown', onKeyDown)
 document.addEventListener('keyup', onKeyUp)
@@ -314,7 +336,7 @@ const checkCollisionForModels = (): boolean => {
         worldPosition,
         new Vector3(1, 1, 1),
     )
-    return boundingBox.intersectsBox(m.boundingBox);;
+    return boundingBox.intersectsBox(m.boundingBox);
   })
 }
 const updateMovement = (delta: number) => {
@@ -338,6 +360,12 @@ const updateMovement = (delta: number) => {
   if (checkCollisionForModels() || checkCollision()) {
     _camera.position.copy(prevPosition)
   }
+}
+
+const toggleDay = () => {
+  config.dayTime = !config.dayTime
+  disposeSpotLight(_scene, spotlights)
+  renderLights()
 }
 
 const isExpandedImageInfo = ref<boolean>(false)
@@ -370,7 +398,7 @@ const selectedPainting = ref<Painting | null>(null)
 const renderLoop = () => {
   let isSelectedPainting = false;
   paintingsData.forEach(painting => {
-    const distanceAllowed = 7;
+    const distanceAllowed = 8;
     const distanceToPainting = _camera.position.distanceTo(painting.position)
     if (distanceToPainting < distanceAllowed) {
       selectedPainting.value = painting;
@@ -387,12 +415,22 @@ const render3dModel = (model: Model, gltfScene: GLTF) => {
   model.scene = gltfScene;
   gltfScene.castShadow = model.castShadow;
   gltfScene.receiveShadow = model.receiveShadow;
+  gltfScene.traverse((node) => {
+    if (node.isMesh) {
+      node.castShadow = model.castShadow;
+      node.receiveShadow = model.receiveShadow;
+    }
+  });
   gltfScene.scale.set(model.scale.x, model.scale.y, model.scale.z);
   gltfScene.position.set(model.position.x, model.position.y, model.position.z);
   gltfScene.rotateY(MathUtils.degToRad(model.rotateY));
   model.boundingBox = new Box3().setFromObject(gltfScene);
   models.push(model)
   _scene.add(gltfScene);
+
+  // helper
+  // const boxHelper = new BoxHelper(gltfScene, 0xffff00);
+  // _scene.add(boxHelper);
 }
 
 const models = [] as Model[];
@@ -404,12 +442,27 @@ const groupedModels: Model[][] = Object.values(modelsData.reduce((acc: {[group: 
   return acc;
 }, {} as {[key: string]: Model[] }));
 const loader = new GLTFLoader();
+
+const modelsLoaded = ref<boolean>(false)
+const loadingManager = new LoadingManager();
+  loadingManager.onLoad = function() {
+    console.log('All loaded');
+    modelsLoaded.value = true;
+  };
+
+const dracoLoader = new DRACOLoader(loadingManager);
+dracoLoader.setDecoderPath('/assets/libs/draco/');
+dracoLoader.preload();
+loader.setDRACOLoader(dracoLoader);
+
 const load3dModels = () => {
   groupedModels.forEach(modelsArray => {
     loader.load( modelsArray[0].path, ( gltf ) => {
       modelsArray.forEach(m => {
         render3dModel(m, gltf.scene.clone())
       })
+    }, () => {
+      console.log('loaded')
     })
   })
 }
@@ -422,6 +475,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   cancelAnimationFrame(_renderLoopId)
   cleanUpThree(_scene, _renderer)
+  disposeSpotLight(_scene, spotlights)
   document.removeEventListener('click', startControls)
   _controls.removeEventListener('lock', onControlsLock)
   _controls.removeEventListener('unlock', onControlsUnlock)

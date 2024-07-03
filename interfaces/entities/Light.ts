@@ -4,6 +4,8 @@ export interface Light {
   targetPosition: Coordinates;
   angle: number;
   intensity: number;
+  distance: number;
+  dayTime: boolean;
 }
 interface Coordinates {
   x: number;
