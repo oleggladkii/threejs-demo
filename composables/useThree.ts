@@ -15,11 +15,11 @@ export function useThree() {
     scene.background = new TextureLoader().load(skyTexture)
 
     const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-    camera.position.set(32, 5, 0)
+    camera.position.set(36, 5, 0)
 
     camera.lookAt(0, 5, 0)
 
-    const ambientLight = new AmbientLight(0xffffff, 1)
+    const ambientLight = new AmbientLight(0xffffff, 0.8)
     scene.add(ambientLight)
 
 

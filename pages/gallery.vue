@@ -9,14 +9,26 @@
         .text-h6 {{ selectedPainting?.info.name }}
         .text-subtitle2 by {{ selectedPainting?.info.author }}
         .text-h6.q-pt-sm(v-if="!isExpandedImageInfo") Current bid {{ selectedPainting?.info.price }}
+        .text-subtitle2.text-center.text-primary(v-if="!isExpandedImageInfo") Click to see more info
       q-card-section.q-pt-none(v-if="isExpandedImageInfo")
         .text-subtitle2 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe, velit voluptate. Aliquam, commodi consectetur deserunt esse eveniet expedita labore maxime nihil nisi non nulla odit, quasi totam ut velit veritatis voluptatibus. Accusantium atque dignissimos, dolorum ea eius, magnam numquam placeat rem repellendus temporibus, totam vero voluptatum? Alias commodi consequuntur eveniet quidem recusandae? Assumenda earum maxime modi sit unde. Blanditiis consequatur consequuntur, debitis doloribus error explicabo, illum laboriosam laudantium nisi nulla odit provident quia veniam? Aliquid architecto asperiores atque aut cumque, doloremque, ex facilis fuga ipsa molestiae quas quasi quo repellat saepe similique ullam, velit. Facere iure laborum modi nam quam!
         .text-h5.q-py-md Current bid {{ selectedPainting?.info.price }}
         q-btn(color="primary", v-if="isExpandedImageInfo") Place bid
 
-  .overlay(v-if="!controlsLocked && !isExpandedImageInfo")
-    h3.title(@click="hideControls") Click to start
-    q-btn.q-ma-sm(color="primary" to="/") Back
+  .overlay(v-if="!controlsLocked && !isExpandedImageInfo" :class="{'overlay-loading': !modelsLoaded}")
+    div.absolute-center(v-if="!modelsLoaded")
+      q-circular-progress(indeterminate='' rounded='' size='100px' color='primary')
+      .text-h6.text-white Loading...
+    template(v-else)
+      h3.title(@click="hideControls") Click here to start
+      q-btn.q-ma-sm(color="primary" to="/") Back
+      q-card.controls.my-card.text-white
+        q-card-section
+          .text-h5.q-mb-md Controls
+          .text-h6 WASD: Movement
+          .text-h6 Shift: Acceleration
+          .text-h6 L: Toggle Light
+          .text-h6 Esc: Exit
 </template>
 
 <script setup lang="ts">
@@ -37,18 +49,19 @@ import {
   SpotLight,
   SpotLightHelper,
   MeshStandardMaterial,
-  MathUtils, Shape, ExtrudeGeometry, LoadingManager, BoxHelper,
+  MathUtils, Shape, ExtrudeGeometry, LoadingManager, BoxHelper, CylinderGeometry,
 } from 'three'
-import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
+import {PointerLockControls} from 'three/examples/jsm/controls/PointerLockControls'
 import grassTexture from '@/assets/images/textures/grass.jpg'
 import floorTexture from '@/assets/images/textures/woodfloor1k.jpg'
 import ceilingTexture from '@/assets/images/textures/rubber.jpg'
-import wallTexture from '@/assets/images/textures/marble.jpg'
-import { useThree } from '@/composables/useThree'
+import marbleTexture from '@/assets/images/textures/marble.jpg'
+import wallTexture from '@/assets/images/textures/wall.jpg'
+import {useThree} from '@/composables/useThree'
 import type {Painting} from "@/interfaces/entities/Painting";
 import {paintingsData} from "@/utils/data/paintingsData";
 import {config} from "@/utils/data/config";
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type {Model} from "~/interfaces/entities/Model";
 import {modelsData} from "~/utils/data/modelsData";
 import {lightData} from "~/utils/data/lightData";
@@ -56,6 +69,8 @@ import type {GLTF} from "three/examples/jsm/loaders/GLTFLoader";
 import {DRACOLoader} from "three/examples/jsm/loaders/DRACOLoader";
 import type {Light} from "~/interfaces/entities/Light";
 import {disposeSpotLight} from "~/utils/disposeUtils";
+import {columnsData} from "~/utils/data/columnsData";
+import {ceilingWindowsData} from "~/utils/data/ceilingWindowsData";
 
 definePageMeta({
   layout: 'empty',
@@ -66,7 +81,7 @@ let _camera: PerspectiveCamera
 let _renderer: WebGLRenderer
 let _controls: PointerLockControls
 let _renderLoopId: number
-const { initThree, cleanUpThree } = useThree()
+const {initThree, cleanUpThree} = useThree()
 const canvas = computed(() => document.getElementById('mountId') as HTMLCanvasElement)
 
 const createSpotlight = (light: Light) => {
@@ -103,7 +118,11 @@ const renderFloor = () => {
   textureFloor.wrapT = MirroredRepeatWrapping
   textureFloor.repeat.set(4, 4)
 
-  const floorPlane = new Mesh(new PlaneGeometry(config.floorWidth + 1, config.floorHeight + 1), new MeshStandardMaterial({ map: textureFloor, side: DoubleSide }))
+  const floorPlane = new Mesh(new PlaneGeometry(config.floorWidth + 1, config.floorHeight + 1), new MeshStandardMaterial({
+    map: textureFloor,
+    side: DoubleSide,
+    roughness: 0.3
+  }))
   floorPlane.rotateX(Math.PI / 2)
   floorPlane.position.set(0, -1, 0)
   floorPlane.receiveShadow = true;
@@ -117,7 +136,10 @@ const renderOutdoor = () => {
   textureOutdoor.wrapT = MirroredRepeatWrapping
   textureOutdoor.repeat.set(12, 12)
 
-  const outdoorPlane = new Mesh(new PlaneGeometry(400, 400), new MeshStandardMaterial({ map: textureOutdoor, side: DoubleSide }))
+  const outdoorPlane = new Mesh(new PlaneGeometry(400, 400), new MeshStandardMaterial({
+    map: textureOutdoor,
+    side: DoubleSide
+  }))
   outdoorPlane.rotateX(Math.PI / 2)
   outdoorPlane.position.set(200, -1.8, 0)
   outdoorPlane.receiveShadow = true;
@@ -129,16 +151,34 @@ const renderCeiling = () => {
   const textureCeiling = new TextureLoader().load(ceilingTexture)
   textureCeiling.wrapS = MirroredRepeatWrapping
   textureCeiling.wrapT = MirroredRepeatWrapping
-  textureCeiling.repeat.set(2, 2)
+  textureCeiling.repeat.set(32, 32)
 
-  const ceilingPlane = new Mesh(new PlaneGeometry(config.floorWidth, config.floorHeight), new MeshStandardMaterial({ map: textureCeiling }))
-  ceilingPlane.rotateX(Math.PI / 2)
-  ceilingPlane.position.set(0, 20, 0)
+  const ceilingShape = new Shape();
+  ceilingShape.moveTo(0, 0);
+  ceilingShape.lineTo( 0, config.floorHeight );
+  ceilingShape.lineTo( config.floorWidth, config.floorHeight );
+  ceilingShape.lineTo( config.floorWidth, 0 );
+  ceilingShape.lineTo( 0, 0 );
 
-  ceilingPlane.castShadow = true;
-  ceilingPlane.receiveShadow = true;
+  ceilingWindowsData.forEach(w => {
+    const windowShapeOne = new Shape();
+    const startAngle = 0;
+    const endAngle = Math.PI * 2;
+    windowShapeOne.absarc(w.x, w.y, w.radius, startAngle, endAngle, false);
 
-  _scene.add(ceilingPlane)
+    ceilingShape.holes.push(windowShapeOne)
+  })
+
+  const ceilingGeometry = new ExtrudeGeometry(ceilingShape, {});
+  const ceilingMesh = new Mesh(ceilingGeometry, new MeshStandardMaterial({ map: textureCeiling }))
+
+  ceilingMesh.rotateX(Math.PI / 2)
+  ceilingMesh.position.set(-(config.floorWidth / 2), 22, -(config.floorHeight / 2))
+
+  ceilingMesh.castShadow = true;
+  ceilingMesh.receiveShadow = true;
+
+  _scene.add(ceilingMesh)
 }
 
 const wallsGroup = new Group()
@@ -146,10 +186,12 @@ const renderWalls = () => {
   _scene.add(wallsGroup)
 
   const textureWall = new TextureLoader().load(wallTexture)
+  // const textureWall = new TextureLoader().load(ceilingTexture)
   textureWall.wrapS = MirroredRepeatWrapping
   textureWall.wrapT = MirroredRepeatWrapping
-  textureWall.repeat.set(4, 3)
-  const material = new MeshStandardMaterial({ map: textureWall })
+  textureWall.repeat.set(6, 4)
+  const material = new MeshStandardMaterial({map: textureWall})
+  // const material = new MeshStandardMaterial({color: '#e3e1e1'})
 
   const frontWall = new Mesh(new BoxGeometry(config.floorWidth, 24, 2), material)
   frontWall.position.set(0, 10, -(config.floorHeight / 2))
@@ -168,11 +210,11 @@ const renderWalls = () => {
   leftWall.receiveShadow = true;
 
   const rightWallShape = new Shape();
-  rightWallShape.moveTo(0, -2);
-  rightWallShape.lineTo(60, -2);
-  rightWallShape.lineTo(60, 23);
-  rightWallShape.lineTo(0, 23);
-  rightWallShape.lineTo(0, -2);
+  rightWallShape.moveTo(-2, -2);
+  rightWallShape.lineTo(64, -2);
+  rightWallShape.lineTo(64, 23);
+  rightWallShape.lineTo(-2, 23);
+  rightWallShape.lineTo(-2, -2);
 
   const windowShapeOne = new Shape();
   windowShapeOne.moveTo(5, 2);
@@ -199,10 +241,7 @@ const renderWalls = () => {
   rightWallShape.holes.push(windowShapeTwo);
   rightWallShape.holes.push(doorShape);
 
-  const extrudeSettings = {
-    bevelEnabled: true
-  };
-  const rightWallGeometry = new ExtrudeGeometry(rightWallShape, extrudeSettings);
+  const rightWallGeometry = new ExtrudeGeometry(rightWallShape, {});
 
   const rightWall = new Mesh(rightWallGeometry, material);
   rightWall.position.set((config.floorWidth / 2), 0, 30);
@@ -218,10 +257,33 @@ const renderWalls = () => {
   })
 }
 
+const columnsGroup = new Group();
+const renderColumns = () => {
+  _scene.add(columnsGroup)
+  const textureColumn = new TextureLoader().load(marbleTexture)
+  textureColumn.wrapS = MirroredRepeatWrapping
+  textureColumn.wrapT = MirroredRepeatWrapping
+  textureColumn.repeat.set(5, 5)
+  const material = new MeshStandardMaterial({map: textureColumn, roughness: 0.5})
+  const geometry = new CylinderGeometry(2, 2, 24, 32)
+  columnsData.forEach(c => {
+    const column = new Mesh(geometry, material)
+    column.position.set(c.position.x, c.position.y, c.position.z)
+    column.castShadow = true
+    column.receiveShadow = true
+    _scene.add(column)
+    columnsGroup.add(column)
+  })
+  columnsGroup.children.forEach((c) => {
+    c.BBox = new Box3()
+    c.BBox.setFromObject(c)
+  })
+}
+
 
 const renderImage = (painting: Painting) => {
   const texture = new TextureLoader().load(painting.path)
-  const material = new MeshStandardMaterial({ map: texture })
+  const material = new MeshStandardMaterial({map: texture})
   const geometry = new PlaneGeometry(painting.width, painting.height)
   const image = new Mesh(geometry, material)
   image.position.set(painting.position.x, painting.position.y, painting.position.z)
@@ -267,7 +329,7 @@ const onControlsUnlock = () => {
 }
 
 const setupScene = () => {
-  const { scene, camera, renderer } = initThree('mountId')
+  const {scene, camera, renderer} = initThree('mountId')
   _scene = scene
   _camera = camera
   _renderer = renderer
@@ -277,6 +339,7 @@ const setupScene = () => {
   renderFloor()
   renderOutdoor()
   renderCeiling()
+  renderColumns()
   renderImages()
   load3dModels()
   renderLights()
@@ -318,10 +381,10 @@ const checkCollision = (): boolean => {
   const worldPosition = new Vector3()
   _camera.getWorldPosition(worldPosition)
   boundingBox.setFromCenterAndSize(
-    worldPosition,
-    new Vector3(1, 1, 1),
+      worldPosition,
+      new Vector3(1, 1, 1),
   )
-  return !!wallsGroup.children.filter((wall) => boundingBox.intersectsBox(wall.BBox)).length
+  return !!wallsGroup.children.filter((wall) => boundingBox.intersectsBox(wall.BBox)).length || !!columnsGroup.children.filter((c) => boundingBox.intersectsBox(c.BBox)).length
 }
 const checkCollisionForModels = (): boolean => {
   return models.some(m => {
@@ -423,7 +486,15 @@ const render3dModel = (model: Model, gltfScene: GLTF) => {
   });
   gltfScene.scale.set(model.scale.x, model.scale.y, model.scale.z);
   gltfScene.position.set(model.position.x, model.position.y, model.position.z);
-  gltfScene.rotateY(MathUtils.degToRad(model.rotateY));
+  if (model.rotateX) {
+    gltfScene.rotateX(MathUtils.degToRad(model.rotateX))
+  }
+  if (model.rotateY) {
+    gltfScene.rotateY(MathUtils.degToRad(model.rotateY));
+  }
+  if (model.rotateZ) {
+    gltfScene.rotateZ(MathUtils.degToRad(model.rotateZ))
+  }
   model.boundingBox = new Box3().setFromObject(gltfScene);
   models.push(model)
   _scene.add(gltfScene);
@@ -434,21 +505,21 @@ const render3dModel = (model: Model, gltfScene: GLTF) => {
 }
 
 const models = [] as Model[];
-const groupedModels: Model[][] = Object.values(modelsData.reduce((acc: {[group: string]: Model[] }, item: Model) => {
+const groupedModels: Model[][] = Object.values(modelsData.reduce((acc: { [group: string]: Model[] }, item: Model) => {
   if (!acc[item.group]) {
     acc[item.group] = [];
   }
   acc[item.group].push(item);
   return acc;
-}, {} as {[key: string]: Model[] }));
+}, {} as { [key: string]: Model[] }));
 const loader = new GLTFLoader();
 
 const modelsLoaded = ref<boolean>(false)
 const loadingManager = new LoadingManager();
-  loadingManager.onLoad = function() {
-    console.log('All loaded');
-    modelsLoaded.value = true;
-  };
+loadingManager.onLoad = function () {
+  console.log('All loaded');
+  modelsLoaded.value = true;
+};
 
 const dracoLoader = new DRACOLoader(loadingManager);
 dracoLoader.setDecoderPath('/assets/libs/draco/');
@@ -457,12 +528,10 @@ loader.setDRACOLoader(dracoLoader);
 
 const load3dModels = () => {
   groupedModels.forEach(modelsArray => {
-    loader.load( modelsArray[0].path, ( gltf ) => {
+    loader.load(modelsArray[0].path, (gltf) => {
       modelsArray.forEach(m => {
         render3dModel(m, gltf.scene.clone())
       })
-    }, () => {
-      console.log('loaded')
     })
   })
 }
@@ -485,89 +554,122 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-  .page {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
+.page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+.overlay,
+.canvas {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  inset: 0;
+  margin: auto;
+}
+
+.overlay {
+  background-color: rgb(0, 0, 0, .6);
+  z-index: 2;
+  &.overlay-loading {
+    background-color: #000000;
   }
-  .overlay,
-  .canvas {
-    width: 100vw;
-    height: 100vh;
-    position: absolute;
-    inset: 0;
-    margin: auto;
+}
+
+.title {
+  position: absolute;
+  text-align: center;
+  color: #fff;
+  font-weight: 500;
+  height: fit-content;
+  margin: 0;
+  width: auto;
+  left: 0;
+  right: 0;
+  top: 40%;
+  cursor: pointer;
+  text-shadow:
+      -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px  1px 0 #000,
+      1px  1px 0 #000;
+}
+
+.info-card {
+  position: fixed;
+  right: 10px;
+  width: 350px;
+  transition: .3s ease-in;
+
+  &.fadeIn {
+    top: 10px;
+    opacity: 0.8;
+    animation: cardFadeIn 0.3s ease-in;
   }
-  .overlay {
-    background-color: rgb(0,0,0, .6);
-    z-index: 2;
+
+  &.fadeOut {
+    top: 0;
+    opacity: 0;
+    animation: cardFadeOut 0.3s ease-out;
   }
-  .title {
-    position: absolute;
+
+  &.expanded {
+    width: 50%;
+    right: 25%;
+    max-height: 90vh;
+    top: 5vh;
+    overflow: scroll;
+    opacity: 1;
+    padding: 12px;
     text-align: center;
-    color: #fff;
-    font-weight: 500;
-    height: fit-content;
-    margin: 0;
-    width: auto;
-    left: 0;
-    right: 0;
-    top: 40%;
-    cursor: pointer;
-  }
-  .info-card {
-    position: fixed;
-    right: 10px;
-    width: 350px;
-    transition: .3s ease-in;
-    &.fadeIn {
-      top: 10px;
-      opacity: 0.8;
-      animation: cardFadeIn 0.3s ease-in;
-    }
-    &.fadeOut {
-      top: 0;
-      opacity: 0;
-      animation: cardFadeOut 0.3s ease-out;
-    }
-    &.expanded {
+
+    img {
       width: 50%;
-      right: 25%;
-      max-height: 90vh;
-      top: 5vh;
-      overflow: scroll;
-      opacity: 1;
-      padding: 12px;
-      text-align: center;
-      img {
-        width: 50%;
-        margin: 0 auto;
-      }
-      .close {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-      }
+      margin: 0 auto;
+    }
+
+    .close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
     }
   }
-  @keyframes cardFadeIn {
-    0% {
-      top:0;
-      opacity: 0;
-    }
-    100% {
-      top: 10px;
-      opacity: 0.8;
-    }
+}
+
+.controls {
+  background: radial-gradient(circle, #35a2ff 0%, #014a88 100%);
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  padding: 4px;
+  color: white;
+  text-shadow:
+      -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px  1px 0 #000,
+      1px  1px 0 #000;
+}
+
+@keyframes cardFadeIn {
+  0% {
+    top: 0;
+    opacity: 0;
   }
-  @keyframes cardFadeOut {
-    0% {
-      top: 10px;
-      opacity: 0.8;
-    }
-    100% {
-      top: 0;
-      opacity: 0;
-    }
+  100% {
+    top: 10px;
+    opacity: 0.8;
   }
+}
+
+@keyframes cardFadeOut {
+  0% {
+    top: 10px;
+    opacity: 0.8;
+  }
+  100% {
+    top: 0;
+    opacity: 0;
+  }
+}
 </style>

@@ -132,20 +132,21 @@ export const lightData: Light[] = [
     distance: 20,
     dayTime: false
   },
+  // lighting outside
   {
     id: 9,
     position: {
       x: (config.floorWidth) + 40,
-      y: 60,
-      z: 40
+      y: 100,
+      z: 20
     },
     targetPosition: {
-      x: 20,
+      x: -60,
       y: -3,
       z: 0
     },
-    angle: 40,
-    intensity: 20000,
+    angle: 30,
+    intensity: 60000,
     distance: 200,
     dayTime: true
   },

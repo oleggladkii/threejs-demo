@@ -7,7 +7,9 @@ export interface Model {
   path: string;
   scale: Coordinates;
   position: Coordinates;
-  rotateY: number;
+  rotateX?: number;
+  rotateY?: number;
+  rotateZ?: number;
   castShadow: boolean;
   receiveShadow: boolean;
   boundingBox: Box3 | null;

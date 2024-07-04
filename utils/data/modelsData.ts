@@ -584,4 +584,109 @@ export const modelsData: Model[] = [
     boundingBox: null,
     scene: null,
   },
+  {
+    id: 31,
+    group: 'ceiling-window',
+    path: 'assets/models/circular-gothic-window/scene.gltf',
+    scale: {
+      x: 20,
+      y: 24,
+      z: 24
+    },
+    position: {
+      x: 40,
+      y: 21.7,
+      z: 14
+    },
+    rotateY: 0,
+    rotateZ: 90,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 32,
+    group: 'ceiling-window',
+    path: 'assets/models/circular-gothic-window/scene.gltf',
+    scale: {
+      x: 20,
+      y: 24,
+      z: 24
+    },
+    position: {
+      x: 20,
+      y: 21.7,
+      z: 14
+    },
+    rotateY: 0,
+    rotateZ: 90,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 33,
+    group: 'ceiling-window',
+    path: 'assets/models/circular-gothic-window/scene.gltf',
+    scale: {
+      x: 20,
+      y: 24,
+      z: 24
+    },
+    position: {
+      x: 0,
+      y: 21.7,
+      z: 14
+    },
+    rotateY: 0,
+    rotateZ: 90,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 34,
+    group: 'ceiling-window',
+    path: 'assets/models/circular-gothic-window/scene.gltf',
+    scale: {
+      x: 20,
+      y: 24,
+      z: 24
+    },
+    position: {
+      x: -20,
+      y: 21.7,
+      z: 14
+    },
+    rotateY: 0,
+    rotateZ: 90,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 35,
+    group: 'ceiling-window',
+    path: 'assets/models/circular-gothic-window/scene.gltf',
+    scale: {
+      x: 20,
+      y: 24,
+      z: 24
+    },
+    position: {
+      x: -40,
+      y: 21.7,
+      z: 14
+    },
+    rotateY: 0,
+    rotateZ: 90,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
 ]
