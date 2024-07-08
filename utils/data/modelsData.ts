@@ -659,5 +659,86 @@ export const modelsData: Model[] = [
     receiveShadow: true,
     boundingBox: null,
     scene: null,
+  },
+  // benches
+  {
+    id: 36,
+    group: 'bench',
+    path: 'assets/models/medieval_chair_game_ready/scene.gltf',
+    scale: {
+      x: 6,
+      y: 3.5,
+      z: 6
+    },
+    position: {
+      x: (config.floorWidth / 2) - 38,
+      y: -1,
+      z: 10
+    },
+    rotateY: 90,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 37,
+    group: 'bench',
+    path: 'assets/models/medieval_chair_game_ready/scene.gltf',
+    scale: {
+      x: 6,
+      y: 3.5,
+      z: 6
+    },
+    position: {
+      x: (config.floorWidth / 2) - 38,
+      y: -1,
+      z: -10
+    },
+    rotateY: 90,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 38,
+    group: 'bench',
+    path: 'assets/models/medieval_chair_game_ready/scene.gltf',
+    scale: {
+      x: 6,
+      y: 3.5,
+      z: 6
+    },
+    position: {
+      x: (config.floorWidth / 2) - 61,
+      y: -1,
+      z: 10
+    },
+    rotateY: 90,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
+    id: 39,
+    group: 'bench',
+    path: 'assets/models/medieval_chair_game_ready/scene.gltf',
+    scale: {
+      x: 6,
+      y: 3.5,
+      z: 6
+    },
+    position: {
+      x: (config.floorWidth / 2) - 61,
+      y: -1,
+      z: -10
+    },
+    rotateY: 90,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
   }
 ]

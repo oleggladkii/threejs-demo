@@ -5,10 +5,12 @@ import {
   AmbientLight,
 } from 'three'
 import {disposeObject, disposeSpotLight} from '@/utils/disposeUtils'
+import {config} from "~/utils/data/config";
 
 export function useThree() {
   let canvas: HTMLCanvasElement;
   const scene = new Scene();
+  let ambientLight: AmbientLight | undefined;
   const initThree = (canvasMountId: string) => {
     canvas = document.getElementById(canvasMountId)! as HTMLCanvasElement
     const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
@@ -31,17 +33,14 @@ export function useThree() {
     return { scene, camera, renderer }
   }
 
-  let ambientLight: AmbientLight | undefined;
   const toggleTimeOfDay = () => {
-    if (!ambientLight) {
-      ambientLight = new AmbientLight(0xffffff, 1)
-      scene.add(ambientLight)
-    } else {
-      disposeSpotLight(scene, [ambientLight])
-      ambientLight = new AmbientLight(0xffffff, 0.4)
-      scene.add(ambientLight)
+    if (ambientLight) {
+      scene.remove(ambientLight)
+      ambientLight.dispose()
       ambientLight = undefined
     }
+    ambientLight = new AmbientLight(0xffffff, config.dayTime ? 1 : 0.4)
+    scene.add(ambientLight)
   }
 
   const cleanUpThree = (scene: Scene, renderer: WebGLRenderer) => {

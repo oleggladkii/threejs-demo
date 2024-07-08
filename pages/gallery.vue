@@ -49,7 +49,14 @@
     SpotLight,
     SpotLightHelper,
     MeshStandardMaterial,
-    MathUtils, Shape, ExtrudeGeometry, LoadingManager, BoxHelper, CylinderGeometry, AnimationMixer,
+    MathUtils,
+    Shape,
+    ExtrudeGeometry,
+    LoadingManager,
+    BoxHelper,
+    CylinderGeometry,
+    SphereGeometry,
+    MeshBasicMaterial, BackSide,
   } from 'three'
 import {PointerLockControls} from 'three/examples/jsm/controls/PointerLockControls'
 import grassTexture from '@/assets/images/textures/grass.jpg'
@@ -71,7 +78,8 @@ import type {Light} from "~/interfaces/entities/Light";
 import {disposeSpotLight} from "~/utils/disposeUtils";
 import {columnsData} from "~/utils/data/columnsData";
 import {ceilingWindowsData} from "~/utils/data/ceilingWindowsData";
-import skyDayTexture from '@/assets/images/textures/blue-sky.jpg'
+import skyDayTexture from 'assets/images/textures/day-sky.jpg'
+import skyNightTexture from 'assets/images/textures/evening-sky.jpg'
 
 definePageMeta({
   layout: 'empty',
@@ -111,6 +119,19 @@ const createSpotlight = (light: Light) => {
   // _scene.add(spotlightHelper);
 
   return spotlight;
+}
+
+let skySphere: Mesh | undefined
+const renderSky = () => {
+  if (skySphere) {
+    _scene.remove(skySphere)
+  }
+  const skyGeometry = new SphereGeometry(300, 32, 32);
+  const texture = config.dayTime ? new TextureLoader().load(skyDayTexture) : new TextureLoader().load(skyNightTexture)
+  const skyMaterial = new MeshBasicMaterial({ map: texture, side: BackSide, color: config.dayTime ? 'transparent' : '#555555' });
+  skySphere = new Mesh(skyGeometry, skyMaterial);
+  _scene.add(skySphere);
+  skySphere.position.set(0, -5, 0);
 }
 
 const renderFloor = () => {
@@ -187,12 +208,10 @@ const renderWalls = () => {
   _scene.add(wallsGroup)
 
   const textureWall = new TextureLoader().load(wallTexture)
-  // const textureWall = new TextureLoader().load(ceilingTexture)
   textureWall.wrapS = MirroredRepeatWrapping
   textureWall.wrapT = MirroredRepeatWrapping
   textureWall.repeat.set(6, 4)
   const material = new MeshStandardMaterial({map: textureWall})
-  // const material = new MeshStandardMaterial({color: '#e3e1e1'})
 
   const frontWall = new Mesh(new BoxGeometry(config.floorWidth, 24, 2), material)
   frontWall.position.set(0, 10, -(config.floorHeight / 2))
@@ -344,6 +363,7 @@ const setupScene = () => {
   renderImages()
   load3dModels()
   renderLights()
+  renderSky()
 
   setControls()
   _renderLoopId = requestAnimationFrame(renderLoop)
@@ -398,7 +418,7 @@ const checkCollisionForModels = (): boolean => {
     _camera.getWorldPosition(worldPosition)
     boundingBox.setFromCenterAndSize(
         worldPosition,
-        new Vector3(1, 1, 1),
+        new Vector3(1, 24, 1),
     )
     return boundingBox.intersectsBox(m.boundingBox);
   })
@@ -430,6 +450,7 @@ const toggleDay = () => {
   config.dayTime = !config.dayTime
   disposeSpotLight(_scene, spotlights)
   renderLights()
+  renderSky()
   toggleTimeOfDay()
 }
 
