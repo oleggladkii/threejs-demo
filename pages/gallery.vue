@@ -422,7 +422,7 @@ const updateMovement = (delta: number) => {
     _controls.moveForward(-speed)
   }
   if (checkCollisionForModels() || checkCollision()) {
-    // _camera.position.copy(prevPosition)
+    _camera.position.copy(prevPosition)
   }
 }
 
