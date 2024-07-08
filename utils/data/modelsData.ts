@@ -16,7 +16,6 @@ export const modelsData: Model[] = [
       y: 32,
       z: -18
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -36,7 +35,6 @@ export const modelsData: Model[] = [
       y: 32,
       z: -18
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -56,7 +54,6 @@ export const modelsData: Model[] = [
       y: 32,
       z: -18
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -76,7 +73,6 @@ export const modelsData: Model[] = [
       y: 32,
       z: -18
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -96,7 +92,6 @@ export const modelsData: Model[] = [
       y: 32,
       z: 18
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -116,7 +111,6 @@ export const modelsData: Model[] = [
       y: 32,
       z: 18
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -136,7 +130,6 @@ export const modelsData: Model[] = [
       y: 32,
       z: 18
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -156,7 +149,6 @@ export const modelsData: Model[] = [
       y: 32,
       z: 18
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -176,7 +168,6 @@ export const modelsData: Model[] = [
       y: 6,
       z: -(config.floorHeight / 2) + 1.5
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -196,7 +187,6 @@ export const modelsData: Model[] = [
       y: 6,
       z: -(config.floorHeight / 2) + 1.5
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -216,7 +206,6 @@ export const modelsData: Model[] = [
       y: 6,
       z: -(config.floorHeight / 2) + 1.5
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -236,7 +225,6 @@ export const modelsData: Model[] = [
       y: 6,
       z: -(config.floorHeight / 2) + 1.5
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -356,7 +344,6 @@ export const modelsData: Model[] = [
       y: 4.7,
       z: -8
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -377,7 +364,6 @@ export const modelsData: Model[] = [
       y: 4.7,
       z: -13.3
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -397,7 +383,6 @@ export const modelsData: Model[] = [
       y: 9.7,
       z: -13.3
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -417,7 +402,6 @@ export const modelsData: Model[] = [
       y: 9.7,
       z: -8
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -437,7 +421,6 @@ export const modelsData: Model[] = [
       y: 15,
       z: -8
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -457,7 +440,6 @@ export const modelsData: Model[] = [
       y: 15,
       z: -13.3
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -478,7 +460,6 @@ export const modelsData: Model[] = [
       y: 4.7,
       z: 21.7
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -498,7 +479,6 @@ export const modelsData: Model[] = [
       y: 4.7,
       z: 27
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -518,7 +498,6 @@ export const modelsData: Model[] = [
       y: 9.7,
       z: 21.7
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -538,7 +517,6 @@ export const modelsData: Model[] = [
       y: 9.7,
       z: 27
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -558,7 +536,6 @@ export const modelsData: Model[] = [
       y: 15,
       z: 21.7
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -578,7 +555,6 @@ export const modelsData: Model[] = [
       y: 15,
       z: 27
     },
-    rotateY: 0,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
@@ -598,7 +574,6 @@ export const modelsData: Model[] = [
       y: 21.7,
       z: 14
     },
-    rotateY: 0,
     rotateZ: 90,
     castShadow: true,
     receiveShadow: true,
@@ -619,7 +594,6 @@ export const modelsData: Model[] = [
       y: 21.7,
       z: 14
     },
-    rotateY: 0,
     rotateZ: 90,
     castShadow: true,
     receiveShadow: true,
@@ -640,7 +614,6 @@ export const modelsData: Model[] = [
       y: 21.7,
       z: 14
     },
-    rotateY: 0,
     rotateZ: 90,
     castShadow: true,
     receiveShadow: true,
@@ -661,7 +634,6 @@ export const modelsData: Model[] = [
       y: 21.7,
       z: 14
     },
-    rotateY: 0,
     rotateZ: 90,
     castShadow: true,
     receiveShadow: true,
@@ -682,11 +654,10 @@ export const modelsData: Model[] = [
       y: 21.7,
       z: 14
     },
-    rotateY: 0,
     rotateZ: 90,
     castShadow: true,
     receiveShadow: true,
     boundingBox: null,
     scene: null,
-  },
+  }
 ]

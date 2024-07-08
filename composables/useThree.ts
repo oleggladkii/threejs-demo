@@ -5,23 +5,20 @@ import {
   AmbientLight,
   TextureLoader,
 } from 'three'
-import { disposeObject } from '@/utils/disposeUtils'
-import skyTexture from '@/assets/images/textures/blue-sky.jpg'
+import {disposeObject, disposeSpotLight} from '@/utils/disposeUtils'
+import skyDayTexture from '@/assets/images/textures/blue-sky.jpg'
+import skyNightTexture from '@/assets/images/textures/night-sky.jpg'
+import {config} from "~/utils/data/config";
 
 export function useThree() {
+  let canvas: HTMLCanvasElement;
+  const scene = new Scene();
+  let ambientLight: AmbientLight | undefined;
   const initThree = (canvasMountId: string) => {
-    const canvas = document.getElementById(canvasMountId)! as HTMLCanvasElement
-    const scene = new Scene()
-    scene.background = new TextureLoader().load(skyTexture)
-
+    canvas = document.getElementById(canvasMountId)! as HTMLCanvasElement
     const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-    camera.position.set(36, 5, 0)
-
-    camera.lookAt(0, 5, 0)
-
-    const ambientLight = new AmbientLight(0xffffff, 0.8)
-    scene.add(ambientLight)
-
+    camera.position.set(36, 6, 0)
+    camera.lookAt(0, 6, 0)
 
     const renderer = new WebGLRenderer({
       canvas,
@@ -29,15 +26,29 @@ export function useThree() {
       alpha: true,
     })
     renderer.shadowMap.enabled = true;
-    renderer.setClearColor('blue', 0.3);
 
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
+    toggleTimeOfDay()
     return { scene, camera, renderer }
   }
+
+  const toggleTimeOfDay = () => {
+    scene.background = new TextureLoader().load(config.dayTime ? skyDayTexture : skyNightTexture)
+    if (!ambientLight) {
+      ambientLight = new AmbientLight(0xffffff, 1)
+      scene.add(ambientLight)
+    } else {
+      disposeSpotLight(scene, [ambientLight])
+      ambientLight = new AmbientLight(0xffffff, 0.4)
+      scene.add(ambientLight)
+      ambientLight = undefined
+    }
+  }
+
   const cleanUpThree = (scene: Scene, renderer: WebGLRenderer) => {
     disposeObject(scene)
     renderer.dispose()
@@ -45,5 +56,6 @@ export function useThree() {
   return {
     initThree,
     cleanUpThree,
+    toggleTimeOfDay
   }
 }

@@ -32,25 +32,25 @@
 </template>
 
 <script setup lang="ts">
-import {
-  type PerspectiveCamera,
-  PlaneGeometry,
-  type Scene,
-  type WebGLRenderer,
-  BoxGeometry,
-  Mesh,
-  DoubleSide,
-  TextureLoader,
-  Group,
-  MirroredRepeatWrapping,
-  Box3,
-  Vector3,
-  Clock,
-  SpotLight,
-  SpotLightHelper,
-  MeshStandardMaterial,
-  MathUtils, Shape, ExtrudeGeometry, LoadingManager, BoxHelper, CylinderGeometry,
-} from 'three'
+  import {
+    type PerspectiveCamera,
+    PlaneGeometry,
+    type Scene,
+    type WebGLRenderer,
+    BoxGeometry,
+    Mesh,
+    DoubleSide,
+    TextureLoader,
+    Group,
+    MirroredRepeatWrapping,
+    Box3,
+    Vector3,
+    Clock,
+    SpotLight,
+    SpotLightHelper,
+    MeshStandardMaterial,
+    MathUtils, Shape, ExtrudeGeometry, LoadingManager, BoxHelper, CylinderGeometry, AnimationMixer,
+  } from 'three'
 import {PointerLockControls} from 'three/examples/jsm/controls/PointerLockControls'
 import grassTexture from '@/assets/images/textures/grass.jpg'
 import floorTexture from '@/assets/images/textures/woodfloor1k.jpg'
@@ -71,6 +71,7 @@ import type {Light} from "~/interfaces/entities/Light";
 import {disposeSpotLight} from "~/utils/disposeUtils";
 import {columnsData} from "~/utils/data/columnsData";
 import {ceilingWindowsData} from "~/utils/data/ceilingWindowsData";
+import skyDayTexture from '@/assets/images/textures/blue-sky.jpg'
 
 definePageMeta({
   layout: 'empty',
@@ -81,7 +82,7 @@ let _camera: PerspectiveCamera
 let _renderer: WebGLRenderer
 let _controls: PointerLockControls
 let _renderLoopId: number
-const {initThree, cleanUpThree} = useThree()
+const {initThree, cleanUpThree, toggleTimeOfDay} = useThree()
 const canvas = computed(() => document.getElementById('mountId') as HTMLCanvasElement)
 
 const createSpotlight = (light: Light) => {
@@ -131,17 +132,17 @@ const renderFloor = () => {
 }
 
 const renderOutdoor = () => {
-  const textureOutdoor = new TextureLoader().load(grassTexture)
-  textureOutdoor.wrapS = MirroredRepeatWrapping
-  textureOutdoor.wrapT = MirroredRepeatWrapping
-  textureOutdoor.repeat.set(12, 12)
+  const textureOutdoorFloor = new TextureLoader().load(grassTexture)
+  textureOutdoorFloor.wrapS = MirroredRepeatWrapping
+  textureOutdoorFloor.wrapT = MirroredRepeatWrapping
+  textureOutdoorFloor.repeat.set(12, 12)
 
   const outdoorPlane = new Mesh(new PlaneGeometry(400, 400), new MeshStandardMaterial({
-    map: textureOutdoor,
+    map: textureOutdoorFloor,
     side: DoubleSide
   }))
-  outdoorPlane.rotateX(Math.PI / 2)
-  outdoorPlane.position.set(200, -1.8, 0)
+  outdoorPlane.rotateX(MathUtils.degToRad(90))
+  outdoorPlane.position.set(240, -1.8, 0)
   outdoorPlane.receiveShadow = true;
 
   _scene.add(outdoorPlane)
@@ -421,7 +422,7 @@ const updateMovement = (delta: number) => {
     _controls.moveForward(-speed)
   }
   if (checkCollisionForModels() || checkCollision()) {
-    _camera.position.copy(prevPosition)
+    // _camera.position.copy(prevPosition)
   }
 }
 
@@ -429,6 +430,7 @@ const toggleDay = () => {
   config.dayTime = !config.dayTime
   disposeSpotLight(_scene, spotlights)
   renderLights()
+  toggleTimeOfDay()
 }
 
 const isExpandedImageInfo = ref<boolean>(false)
@@ -517,7 +519,6 @@ const loader = new GLTFLoader();
 const modelsLoaded = ref<boolean>(false)
 const loadingManager = new LoadingManager();
 loadingManager.onLoad = function () {
-  console.log('All loaded');
   modelsLoaded.value = true;
 };
 
