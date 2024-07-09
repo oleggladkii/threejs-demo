@@ -418,7 +418,7 @@ const checkCollisionForModels = (): boolean => {
     _camera.getWorldPosition(worldPosition)
     boundingBox.setFromCenterAndSize(
         worldPosition,
-        new Vector3(1, 24, 1),
+        new Vector3(1, 10, 1),
     )
     return boundingBox.intersectsBox(m.boundingBox);
   })

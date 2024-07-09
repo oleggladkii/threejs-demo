@@ -7,10 +7,11 @@ import painting5 from "assets/images/paintings/painting5.jpeg";
 import painting6 from "assets/images/paintings/painting6.jpeg";
 import painting7 from "assets/images/paintings/painting7.jpeg";
 import painting8 from "assets/images/paintings/painting8.jpeg";
+import painting9 from "assets/images/paintings/painting9.jpg";
+import painting10 from "assets/images/paintings/painting10.jpg";
 import {config} from "~/utils/data/config";
 
 export const paintingsData: Painting[] = [{
-  id: 1,
   path: painting1,
   width: 12,
   height: 7.32,
@@ -23,7 +24,6 @@ export const paintingsData: Painting[] = [{
   }
 },
   {
-    id: 2,
     path: painting2,
     width: 8,
     height: 8,
@@ -35,7 +35,6 @@ export const paintingsData: Painting[] = [{
       price: '$970m'
     },
   }, {
-    id: 3,
     path: painting3,
     width: 12,
     height: 8.16,
@@ -47,7 +46,6 @@ export const paintingsData: Painting[] = [{
       price: '$100m'
     },
   }, {
-    id: 4,
     path: painting4,
     width: 12,
     height: 7.5,
@@ -59,7 +57,6 @@ export const paintingsData: Painting[] = [{
       price: '$150m'
     },
   }, {
-    id: 5,
     path: painting5,
     width: 12,
     height: 9.3,
@@ -71,7 +68,6 @@ export const paintingsData: Painting[] = [{
       price: '$250m'
     },
   }, {
-    id: 6,
     path: painting6,
     width: 12,
     height: 9.22,
@@ -83,7 +79,6 @@ export const paintingsData: Painting[] = [{
       price: '$350m'
     },
   }, {
-    id: 7,
     path: painting7,
     width: 12,
     height: 8.55,
@@ -95,7 +90,6 @@ export const paintingsData: Painting[] = [{
       price: '$120m'
     },
   }, {
-    id: 8,
     path: painting8,
     width: 12,
     height: 7.87,
@@ -105,6 +99,30 @@ export const paintingsData: Painting[] = [{
       name: 'The Embarkation for Cythera (1717)',
       author: 'Jean-Antoine Watteau',
       price: '$550m'
+    },
+  },
+  {
+    path: painting9,
+    width: 12,
+    height: 5.34,
+    position: {x: -28, y: 6, z: (config.floorHeight / 2) - 1.1},
+    rotateY: Math.PI,
+    info: {
+      name: 'Guernica (1937)',
+      author: 'Pablo Picasso',
+      price: '$200m'
+    },
+  },
+  {
+    path: painting10,
+    width: 12,
+    height: 9.01,
+    position: {x: -28, y: 6, z: -(config.floorHeight / 2) + 1.1},
+    rotateY: 0,
+    info: {
+      name: 'The Persistence of Memory (1931)',
+      author: 'Salvador Dalí',
+      price: '$1500m'
     },
   }
 ]

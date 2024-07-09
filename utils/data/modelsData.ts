@@ -3,7 +3,6 @@ import {config} from "~/utils/data/config";
 
 export const modelsData: Model[] = [
   {
-    id: 3,
     group: 'ceiling-lamp',
     path: 'assets/models/ceiling-lamp/scene.gltf',
     scale: {
@@ -22,7 +21,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 4,
     group: 'ceiling-lamp',
     path: 'assets/models/ceiling-lamp/scene.gltf',
     scale: {
@@ -41,7 +39,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 5,
     group: 'ceiling-lamp',
     path: 'assets/models/ceiling-lamp/scene.gltf',
     scale: {
@@ -60,7 +57,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 6,
     group: 'ceiling-lamp',
     path: 'assets/models/ceiling-lamp/scene.gltf',
     scale: {
@@ -79,7 +75,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 7,
     group: 'ceiling-lamp',
     path: 'assets/models/ceiling-lamp/scene.gltf',
     scale: {
@@ -98,7 +93,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 8,
     group: 'ceiling-lamp',
     path: 'assets/models/ceiling-lamp/scene.gltf',
     scale: {
@@ -117,7 +111,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 9,
     group: 'ceiling-lamp',
     path: 'assets/models/ceiling-lamp/scene.gltf',
     scale: {
@@ -136,7 +129,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 10,
     group: 'ceiling-lamp',
     path: 'assets/models/ceiling-lamp/scene.gltf',
     scale: {
@@ -155,7 +147,24 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 11,
+    group: 'painting-frame',
+    path: 'assets/models/painting-frame/scene.gltf',
+    scale: {
+      x: 5.1,
+      y: 2.5,
+      z: 3
+    },
+    position: {
+      x: -28,
+      y: 6,
+      z: -(config.floorHeight / 2) + 1.5
+    },
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
     group: 'painting-frame',
     path: 'assets/models/painting-frame/scene.gltf',
     scale: {
@@ -174,7 +183,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 12,
     group: 'painting-frame',
     path: 'assets/models/painting-frame/scene.gltf',
     scale: {
@@ -193,7 +201,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 13,
     group: 'painting-frame',
     path: 'assets/models/painting-frame/scene.gltf',
     scale: {
@@ -212,7 +219,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 14,
     group: 'painting-frame',
     path: 'assets/models/painting-frame/scene.gltf',
     scale: {
@@ -231,7 +237,25 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 15,
+    group: 'painting-frame',
+    path: 'assets/models/painting-frame/scene.gltf',
+    scale: {
+      x: 5.3,
+      y: 1.45,
+      z: 3
+    },
+    position: {
+      x: -28,
+      y: 6,
+      z: (config.floorHeight / 2) - 1.5
+    },
+    rotateY: 180,
+    castShadow: true,
+    receiveShadow: true,
+    boundingBox: null,
+    scene: null,
+  },
+  {
     group: 'painting-frame',
     path: 'assets/models/painting-frame/scene.gltf',
     scale: {
@@ -251,7 +275,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 16,
     group: 'painting-frame',
     path: 'assets/models/painting-frame/scene.gltf',
     scale: {
@@ -271,7 +294,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 17,
     group: 'painting-frame',
     path: 'assets/models/painting-frame/scene.gltf',
     scale: {
@@ -291,7 +313,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 16,
     group: 'painting-frame',
     path: 'assets/models/painting-frame/scene.gltf',
     scale: {
@@ -311,7 +332,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 17,
     group: 'door',
     path: 'assets/models/realistic-door/scene.gltf',
     scale: {
@@ -331,7 +351,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 19,
     group: 'window',
     path: 'assets/models/square-window/scene.gltf',
     scale: {
@@ -351,7 +370,6 @@ export const modelsData: Model[] = [
   },
   // left window
   {
-    id: 20,
     group: 'window',
     path: 'assets/models/square-window/scene.gltf',
     scale: {
@@ -370,7 +388,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 21,
     group: 'window',
     path: 'assets/models/square-window/scene.gltf',
     scale: {
@@ -389,7 +406,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 22,
     group: 'window',
     path: 'assets/models/square-window/scene.gltf',
     scale: {
@@ -408,7 +424,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 23,
     group: 'window',
     path: 'assets/models/square-window/scene.gltf',
     scale: {
@@ -427,7 +442,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 24,
     group: 'window',
     path: 'assets/models/square-window/scene.gltf',
     scale: {
@@ -447,7 +461,6 @@ export const modelsData: Model[] = [
   },
   //right window
   {
-    id: 25,
     group: 'window',
     path: 'assets/models/square-window/scene.gltf',
     scale: {
@@ -466,7 +479,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 26,
     group: 'window',
     path: 'assets/models/square-window/scene.gltf',
     scale: {
@@ -485,7 +497,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 27,
     group: 'window',
     path: 'assets/models/square-window/scene.gltf',
     scale: {
@@ -504,7 +515,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 28,
     group: 'window',
     path: 'assets/models/square-window/scene.gltf',
     scale: {
@@ -523,7 +533,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 29,
     group: 'window',
     path: 'assets/models/square-window/scene.gltf',
     scale: {
@@ -542,7 +551,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 30,
     group: 'window',
     path: 'assets/models/square-window/scene.gltf',
     scale: {
@@ -561,7 +569,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 31,
     group: 'ceiling-window',
     path: 'assets/models/circular-gothic-window/scene.gltf',
     scale: {
@@ -581,7 +588,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 32,
     group: 'ceiling-window',
     path: 'assets/models/circular-gothic-window/scene.gltf',
     scale: {
@@ -601,7 +607,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 33,
     group: 'ceiling-window',
     path: 'assets/models/circular-gothic-window/scene.gltf',
     scale: {
@@ -621,7 +626,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 34,
     group: 'ceiling-window',
     path: 'assets/models/circular-gothic-window/scene.gltf',
     scale: {
@@ -641,7 +645,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 35,
     group: 'ceiling-window',
     path: 'assets/models/circular-gothic-window/scene.gltf',
     scale: {
@@ -662,7 +665,6 @@ export const modelsData: Model[] = [
   },
   // benches
   {
-    id: 36,
     group: 'bench',
     path: 'assets/models/medieval_chair_game_ready/scene.gltf',
     scale: {
@@ -682,7 +684,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 37,
     group: 'bench',
     path: 'assets/models/medieval_chair_game_ready/scene.gltf',
     scale: {
@@ -702,7 +703,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 38,
     group: 'bench',
     path: 'assets/models/medieval_chair_game_ready/scene.gltf',
     scale: {
@@ -722,7 +722,6 @@ export const modelsData: Model[] = [
     scene: null,
   },
   {
-    id: 39,
     group: 'bench',
     path: 'assets/models/medieval_chair_game_ready/scene.gltf',
     scale: {

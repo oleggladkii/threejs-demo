@@ -1,5 +1,4 @@
 export interface Painting {
-  id: number;
   path: string;
   width: number;
   height: number;
