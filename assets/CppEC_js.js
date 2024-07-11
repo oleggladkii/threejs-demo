@@ -1,0 +1,1 @@
+import{c as r}from"./jA9n02eJ.js";function n(t,a,e){return e<=a?a:Math.min(e,Math.max(a,t))}const o={dark:{type:Boolean,default:null}};function s(t,a){return r(()=>t.dark===null?a.dark.isActive:t.dark)}export{s as a,n as b,o as u};
