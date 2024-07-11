@@ -4,13 +4,13 @@ import {
   WebGLRenderer,
   AmbientLight,
 } from 'three'
-import {disposeObject, disposeSpotLight} from '@/utils/disposeUtils'
-import {config} from "~/utils/data/config";
+import { disposeObject, disposeSpotLight } from '@/utils/disposeUtils'
+import { config } from '~/utils/data/config'
 
 export function useThree() {
-  let canvas: HTMLCanvasElement;
-  const scene = new Scene();
-  let ambientLight: AmbientLight | undefined;
+  let canvas: HTMLCanvasElement
+  const scene = new Scene()
+  let ambientLight: AmbientLight | undefined
   const initThree = (canvasMountId: string) => {
     canvas = document.getElementById(canvasMountId)! as HTMLCanvasElement
     const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
@@ -22,12 +22,12 @@ export function useThree() {
       antialias: true,
       alpha: true,
     })
-    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.enabled = true
 
     window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+      camera.aspect = window.innerWidth / window.innerHeight
+      renderer.setSize(window.innerWidth, window.innerHeight)
+    })
 
     toggleTimeOfDay()
     return { scene, camera, renderer }
@@ -50,6 +50,6 @@ export function useThree() {
   return {
     initThree,
     cleanUpThree,
-    toggleTimeOfDay
+    toggleTimeOfDay,
   }
 }

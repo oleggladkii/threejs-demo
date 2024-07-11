@@ -1,6 +1,5 @@
 export interface CeilingWindow {
-  x: number;
-  y: number;
-  radius: number;
+  x: number
+  y: number
+  radius: number
 }
-

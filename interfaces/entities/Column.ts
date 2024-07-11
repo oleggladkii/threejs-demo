@@ -1,9 +1,8 @@
 export interface Column {
-  position: Coordinates;
+  position: Coordinates
 }
 interface Coordinates {
-  x: number;
-  y: number;
-  z: number;
+  x: number
+  y: number
+  z: number
 }
-

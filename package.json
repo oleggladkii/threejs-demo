@@ -9,11 +9,13 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.11",
     "add": "^2.0.6",
+    "gh-pages": "^6.1.1",
     "nuxt": "^3.11.2",
     "quasar": "^2.15.3",
     "vue": "^3.4.21",
